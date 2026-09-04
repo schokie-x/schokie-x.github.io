@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>우리집 인테리어 레퍼런스 선택기 v5</title>
+<style>
+:root{--bg:#f4f2ee;--card:#fff;--text:#222;--muted:#746f68;--line:#ddd8d0;--dark:#232323;--accent:#9a7445;--ok:#2f6e4f}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text)}
+header{position:sticky;top:0;z-index:30;background:rgba(244,242,238,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top{max-width:1550px;margin:auto;padding:18px 22px 12px;display:flex;justify-content:space-between;gap:18px;align-items:center}
+h1{font-size:23px;margin:0}.subtitle{font-size:13px;color:var(--muted);margin-top:5px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+button{border:1px solid var(--line);background:#fff;padding:9px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+button.primary{background:var(--dark);color:#fff;border-color:var(--dark)}
+.tabs{max-width:1550px;margin:auto;padding:0 22px 12px;display:flex;gap:7px;overflow:auto}
+.tab{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:13px;cursor:pointer}
+.tab.active{background:var(--dark);color:#fff;border-color:var(--dark)}
+main{max-width:1550px;margin:auto;padding:20px 22px 60px}
+.guide{background:#fff;border:1px solid var(--line);border-radius:15px;padding:15px 17px;margin-bottom:18px;line-height:1.55}
+.guide strong{font-size:15px}.guide .small{color:var(--muted);font-size:13px;margin-top:4px}
+.grid,.summary{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:16px}
+.card,.sum{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.035)}
+.card.primarySel{outline:3px solid var(--dark)}.card.refSel{outline:3px solid var(--accent)}
+.imgwrap{aspect-ratio:4/3;background:#e8e4dd;overflow:hidden;position:relative;cursor:pointer}
+.imgwrap img,.sumitem img{width:100%;height:100%;object-fit:cover;display:block}
+.badges{position:absolute;left:9px;top:9px;display:flex;gap:6px;flex-wrap:wrap}
+.badge{font-size:11px;padding:5px 7px;border-radius:8px;background:rgba(255,255,255,.94);font-weight:800}
+.verified{background:rgba(232,246,237,.96);color:var(--ok)}
+.sel{position:absolute;right:9px;top:9px;font-size:12px;font-weight:900;padding:7px 9px;border-radius:9px;display:none}
+.primarySel .sel{display:block;background:var(--dark);color:#fff}.refSel .sel{display:block;background:var(--accent);color:#fff}
+.meta{padding:13px 14px 14px}.title{font-weight:850;font-size:16px}.spec{font-size:13px;color:#504d49;line-height:1.45;margin-top:7px;min-height:55px}
+.project{font-size:12px;color:var(--muted);border-top:1px solid #eee;margin-top:10px;padding-top:9px}.project a{color:#444}.hint{font-size:11px;color:#8a857f;margin-top:6px}
+.sum{padding:14px}.sum h3{margin:0 0 10px}.sumitem{margin-bottom:13px}.sumitem .pic{aspect-ratio:4/3;overflow:hidden;border-radius:10px}.sumitem div{font-size:12px;line-height:1.45;margin-top:5px}
+.empty{background:#fff;border:1px dashed var(--line);border-radius:14px;padding:35px;text-align:center;color:var(--muted)}
+.hidden{display:none!important}
+@media(max-width:650px){.top{align-items:flex-start;flex-direction:column}main{padding:14px}.grid,.summary{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<div class="top">
+  <div>
+    <h1>우리집 인테리어 레퍼런스 선택기 v5</h1>
+    <div class="subtitle">벽·바닥 인기 조합 보강 · 거실 TV벽/창가 분리 · 주방 구조/현관/조명 확대</div>
+  </div>
+  <div class="actions">
+    <button class="primary" id="shareBtn">선택 결과 링크 복사</button>
+    <button id="resetBtn">선택 초기화</button>
+  </div>
+</div>
+<div class="tabs" id="tabs"></div>
+</header>
+
+<main>
+  <div class="guide" id="guide"></div>
+  <section id="cardSection"><div class="grid" id="grid"></div></section>
+  <section id="resultSection" class="hidden"><div class="summary" id="summary"></div></section>
+</main>
+
+<script>
+const DATA = {"categories": [{"id": "wall", "label": "벽지·천장지", "desc": "실제 30~40평대 사례에서 자주 보이는 벽지+천장지 조합을 제품명/품번 중심으로 비교합니다."}, {"id": "floor", "label": "바닥·마루", "desc": "많이 쓰이는 우드 강마루·스톤형 강마루·타일형 강마루 조합을 벽지와 함께 비교합니다."}, {"id": "living_tv", "label": "거실 TV벽", "desc": "TV가 있는 벽을 어떻게 만들지 고릅니다: 반매립, 무장식, 플로팅장, 풀수납, 히든도어."}, {"id": "living_window", "label": "거실 창가·소파쪽", "desc": "TV 반대편/창가 쪽 구성입니다: 커튼박스, 벤치, 수납, 소파벽, 확장형 창가."}, {"id": "kstruct", "label": "주방 구조", "desc": "아일랜드 유무뿐 아니라 아일랜드 위에 무엇을 넣는지까지 구분합니다: 수납만 / 인덕션 / 싱크 / 둘 다."}, {"id": "kfinish", "label": "주방 마감·가구", "desc": "냉장고장, 키큰장, 후드, 상·하부장, 상판 같은 디테일을 고릅니다."}, {"id": "bath1", "label": "거실욕실", "desc": "공용 욕실 기준. 타일 크기/톤, 욕조·샤워존, 조적 파티션, 거울장 구성을 비교합니다."}, {"id": "bath2", "label": "안방욕실", "desc": "안방 욕실은 호텔식·욕조형·샤워집중형 등 레이아웃 차이를 비교합니다."}, {"id": "entry", "label": "현관·중문", "desc": "중문이 실제로 보이는 유형 위주로 비교합니다: 3연동, 원슬라이딩, 스윙, 여닫이, 우드 간살, 중문 없음."}, {"id": "door", "label": "방문·문선", "desc": "방문이 잘 보이는 사진 위주입니다. 무문선, 9mm 문선, 일반 얇은 문선, 우드문, 히든도어를 비교합니다."}, {"id": "film", "label": "창호·필름 (보류)", "desc": "요청대로 이번 버전에서는 추가 보강하지 않았습니다."}, {"id": "light", "label": "거실 조명·천장", "desc": "거실 기준 조합을 늘렸습니다: 우물+간접+실링팬, 평천장+다운라이트, 커튼박스 간접, 라인조명 등."}, {"id": "dress", "label": "드레스룸 (보류)", "desc": "요청대로 이번 버전에서는 추가 보강하지 않았습니다."}], "cards": [{"id": "w1", "cat": "wall", "title": "디아망 회벽 크림화이트 + 같은 천장", "kind": "벽/천장 동일", "spec": "LX 디아망 PR002-12를 벽과 천장 모두 사용. 가장 무난하고 톤 차이가 없는 웜화이트 조합.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-525422158188672.jpg?c=c&h=640&w=960", "src": "https://contents.ohou.se/projects/197890", "project": "에코타운 3단지 30평대", "verified": true, "popular": true}, {"id": "w2", "cat": "wall", "title": "디아망 크림화이트 + 오프화이트 천장", "kind": "벽 한 톤 진하게", "spec": "벽: LX 디아망 PR002-12 / 천장: 서울벽지 카라 1001-1 오프화이트. 벽 질감은 살리고 천장은 조금 더 밝게.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-521849416695872.jpg?c=c&h=640&w=960", "src": "https://contents.ohou.se/projects/201257", "project": "하남 30평 모던 리모델링", "verified": true, "popular": true}, {"id": "w3", "cat": "wall", "title": "디아망 회벽크림 + 퓨어화이트 천장", "kind": "천장 더 밝게", "spec": "벽: 디아망 PR002-11 회벽 크림화이트 / 천장: 디아망 PR002-01 퓨어화이트. 천장을 한 톤 밝게 잡는 조합.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-478437226872896.jpg?c=c&h=640&w=960", "src": "https://contents.ohou.se/projects/179909", "project": "화서역 24평 신혼집", "verified": true, "popular": true}, {"id": "w4", "cat": "wall", "title": "디아망 회벽화이트 + 슈가 천장지", "kind": "화이트 계열", "spec": "벽: LX 디아망 PR002-01 회벽화이트 / 천장: LX 슈가 8190-01. 깔끔하고 밝은 화이트 조합.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-506657146503296.png?c=c&h=640&w=960", "src": "https://contents.ohou.se/projects/167638", "project": "동탄역 32평", "verified": true, "popular": true}, {"id": "w5", "cat": "wall", "title": "디아망 퓨어화이트 벽·천장", "kind": "밝은 화이트", "spec": "벽/천장 모두 디아망 PR002-10 퓨어화이트. 크림기보다 밝고 깨끗한 느낌.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-500232646897792.jpg?c=c&h=640&w=960", "src": "https://contents.ohou.se/projects/182303", "project": "브라운스톤당산", "verified": true, "popular": false}, {"id": "w6", "cat": "wall", "title": "디아망 샌드아이보리 + 밝은 천장", "kind": "아이보리 회벽", "spec": "거실 벽은 LX 디아망 리얼회벽 샌드 아이보리 계열. 순백보다 차분하고 고급스러운 톤.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-489304191352960.jpg?c=c&h=720&w=720", "src": "https://contents.ohou.se/projects/194106", "project": "흑석한강푸르지오 32평", "verified": true, "popular": false}, {"id": "w7", "cat": "wall", "title": "디아망 포티스 샌디크림", "kind": "프리미엄 질감", "spec": "공용부에 디아망 포티스 샌디크림을 쓰는 고급형. 회벽크림보다 질감과 존재감이 강한 선택.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-471255130693696.jpg?c=c&h=640&w=960", "src": "https://contents.ohou.se/projects/187387", "project": "40평대 반셀프 인테리어", "verified": true, "popular": false}, {"id": "f1", "cat": "floor", "title": "마뷸러스 리브 젠틀판타지", "kind": "스톤형 강마루", "spec": "구정마루 마뷸러스 리브 젠틀판타지 + 디아망 회벽계열. 타일 느낌과 보행감을 같이 원하는 조합.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-525422158188672.jpg?c=c&h=640&w=960&floor=1", "src": "https://contents.ohou.se/projects/202395", "project": "한보라더힐 33평", "verified": true, "popular": true}, {"id": "f2", "cat": "floor", "title": "마뷸러스 리브 모로칸크림", "kind": "크림 스톤형", "spec": "구정마루 마뷸러스 리브/뮤즈 모로칸크림 + 디아망 크림화이트. 따뜻한 스톤 무드.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-489304191352960.jpg?c=c&h=720&w=720&floor=2", "src": "https://contents.ohou.se/projects/194106", "project": "흑석한강푸르지오 32평", "verified": true, "popular": true}, {"id": "f3", "cat": "floor", "title": "마뷸러스 젠 웜브리즈", "kind": "밝은 타일형 강마루", "spec": "구정마루 마뷸러스 젠 웜브리즈 597각. 디아망 화이트와 함께 많이 보이는 밝은 대형 패턴.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-383090046951424.jpg?c=c&h=720&w=720", "src": "https://contents.ohou.se/projects/187747", "project": "동탄 30평대", "verified": true, "popular": true}, {"id": "f4", "cat": "floor", "title": "한솔 SB스톤 마테라베이지", "kind": "스톤 강마루", "spec": "SB 스톤 강마루 마테라베이지 + 디아망 크림화이트. 따뜻한 베이지 스톤톤.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-521849416695872.jpg?c=c&h=640&w=960&floor=4", "src": "https://contents.ohou.se/projects/201257", "project": "하남 30평", "verified": true, "popular": true}, {"id": "f5", "cat": "floor", "title": "한솔 SB스톤 무이네라이트", "kind": "밝은 스톤 강마루", "spec": "SB 스톤 무이네라이트 + 디아망 PR002-12. 크림·화이트 공용부에 잘 맞는 밝은 조합.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-525422158188672.jpg?c=c&h=640&w=960&floor=5", "src": "https://contents.ohou.se/projects/202117", "project": "미사 35평", "verified": true, "popular": true}, {"id": "f6", "cat": "floor", "title": "동화 나투스진 이모션 블랑", "kind": "밝은 우드 강마루", "spec": "밝은 우드 계열 강마루 + 디아망 회벽크림. 타일 느낌보다 집다운 따뜻함을 원하는 경우.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-500232646897792.jpg?c=c&h=640&w=960&floor=6", "src": "https://contents.ohou.se/projects/190306", "project": "개봉동 30평대", "verified": true, "popular": false}, {"id": "f7", "cat": "floor", "title": "구정마루 돈오크", "kind": "내추럴 오크", "spec": "디아망 크림화이트 + 밝은 오크 마루. 가장 전형적인 화이트&우드 조합.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-517644707500160.jpg?c=c&h=640&w=960", "src": "https://contents.ohou.se/projects/200220", "project": "명지 30평", "verified": true, "popular": true}, {"id": "tv1", "cat": "living_tv", "title": "TV 반매립 + 선 숨김", "kind": "반매립", "spec": "TV 두께와 배선을 벽 안쪽으로 정리하고 장은 최소화.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-452789272637504.jpg?c=c&h=640&w=960", "src": "https://contents.ohou.se/projects/188002", "project": "30평 거실", "verified": true, "popular": true}, {"id": "tv2", "cat": "living_tv", "title": "곡선 반매립벽 + 히든도어", "kind": "반매립+곡선", "spec": "TV벽 끝을 곡선으로 마감하고 옆 방문을 히든도어로 연결.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-500232646897792.jpg?c=c&h=640&w=960&tv=2", "src": "https://contents.ohou.se/projects/200067", "project": "신동백 34평", "verified": true, "popular": false}, {"id": "tv3", "cat": "living_tv", "title": "TV만 벽걸이, 수납 없음", "kind": "무장식", "spec": "아트월과 TV장 없이 TV만 벽걸이. 가장 깔끔하고 비용도 적은 타입.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-478437226872896.jpg?c=c&h=640&w=960&tv=3", "src": "https://contents.ohou.se/projects/190715", "project": "당산 25평", "verified": false, "popular": true}, {"id": "tv4", "cat": "living_tv", "title": "TV + 낮은 플로팅장", "kind": "낮은 수납", "spec": "바닥에서 띄운 낮은 플랩장/플로팅장을 두어 청소와 수납을 동시에.", "img": "https://image.ohousecdn.com/i/bucketplace-v2-development/uploads/cards/projects/167067759385509494.jpg?c=c&h=640&w=960", "src": "https://contents.ohou.se/projects/134016", "project": "31평 리모델링", "verified": true, "popular": false}, {"id": "tv5", "cat": "living_tv", "title": "TV 월플렉스 풀수납", "kind": "전면 수납", "spec": "TV 주변 벽 전체를 맞춤 수납장으로 구성. 수납량 최우선.", "img": "https://image.ohousecdn.com/i/bucketplace-v2-development/uploads/projects/cover_images/170046217254383984.jpg", "src": "https://contents.ohou.se/projects/148814", "project": "49평 맞춤가구 사례", "verified": true, "popular": false}, {"id": "tv6", "cat": "living_tv", "title": "우드 포인트 TV월", "kind": "아트월", "spec": "화이트 벽 사이에 우드 패널/슬랫을 일부 넣어 TV벽을 포인트화.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-506657146503296.png?c=c&h=640&w=960&tv=6", "src": "https://contents.ohou.se/projects/200490", "project": "래미안삼성 41평", "verified": false, "popular": false}, {"id": "lw1", "cat": "living_window", "title": "창가 벤치 + 라운드 마감", "kind": "창가 벤치", "spec": "샤시 하부 공간을 앉을 수 있는 벤치/수납으로 활용.", "img": "https://jmdesign.kr/web/upload/NNEditor/20211105/copy-1636088065-17.jpg", "src": "https://jmdesign.kr/board/gallery/read.html?no=1946&board_no=8", "project": "광교 자연앤자이 39평", "verified": true, "popular": false}, {"id": "lw2", "cat": "living_window", "title": "확장형 창가 + 쉬어커튼", "kind": "창가 비움", "spec": "창 앞 가구를 최소화하고 바닥을 끝까지 이어 넓어 보이게.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-517644707500160.jpg?c=c&h=640&w=960&window=2", "src": "https://contents.ohou.se/projects/200220", "project": "명지 30평", "verified": false, "popular": true}, {"id": "lw3", "cat": "living_window", "title": "커튼박스 간접조명", "kind": "커튼박스", "spec": "창가 커튼박스에 T5 간접을 넣어 저녁 무드를 만드는 방식.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-452789272637504.jpg?c=c&h=640&w=960&window=3", "src": "https://contents.ohou.se/projects/188002", "project": "30평 거실", "verified": true, "popular": true}, {"id": "lw4", "cat": "living_window", "title": "창가 낮은 수납장", "kind": "창가 수납", "spec": "창 하부에 낮은 수납을 넣되 시야는 막지 않는 방식.", "img": "https://jmdesign.kr/web/upload/NNEditor/20211105/2.jpg", "src": "https://jmdesign.kr/board/gallery/read.html?no=1946&board_no=8", "project": "광교 자연앤자이 39평", "verified": false, "popular": false}, {"id": "lw5", "cat": "living_window", "title": "소파벽 무장식 + 월워셔", "kind": "소파벽", "spec": "소파 뒤는 비우고 다운라이트/월워셔만 사용. 가장 미니멀한 타입.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-525422158188672.jpg?c=c&h=640&w=960&window=5", "src": "https://contents.ohou.se/projects/202117", "project": "미사 35평", "verified": false, "popular": true}, {"id": "lw6", "cat": "living_window", "title": "소파벽 얕은 선반/니치", "kind": "소파벽 수납", "spec": "소파 뒤에 얕은 매립 선반이나 니치를 넣어 소품/조명 포인트를 주는 방식.", "img": "https://jmdesign.kr/web/upload/NNEditor/20211105/copy-1636077029-6.jpg", "src": "https://jmdesign.kr/board/gallery/read.html?no=1946&board_no=8", "project": "광교 자연앤자이 39평", "verified": false, "popular": false}, {"id": "ks1", "cat": "kstruct", "title": "아일랜드 없는 일자형", "kind": "아일랜드 없음", "spec": "한쪽 벽에 조리·세척·수납을 모두 배치. 중앙은 식탁/동선으로 완전히 비움.", "img": "https://static.hyundailivart.co.kr/upload_mall/board/ME00000029/B200080204/tplt/0000256393_20250423143407200.jpg?AO=1&QT=60", "src": "https://www.hyundailivart.co.kr/community/export/B200080204", "project": "30평대 일자형 참고", "verified": false, "popular": true}, {"id": "ks2", "cat": "kstruct", "title": "아일랜드 없는 ㄱ자형", "kind": "아일랜드 없음", "spec": "코너를 활용해 작업면을 늘리면서 거실 쪽 중앙을 비우는 구조.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-500211071369344.jpg?c=c&h=640&w=960", "src": "https://contents.ohou.se/projects/196229", "project": "32평 ㄱ자형", "verified": false, "popular": true}, {"id": "ks3", "cat": "kstruct", "title": "ㄷ자형 + 짧은 식탁 연결", "kind": "준 ㄷ자형", "spec": "기존 ㄷ자 동선을 유지하고 한쪽 끝을 식탁/바로 연결하는 타입.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-471255130693696.jpg?c=c&h=640&w=960&k=3", "src": "https://contents.ohou.se/projects/145930", "project": "30평 ㄷ자형", "verified": true, "popular": false}, {"id": "ks4", "cat": "kstruct", "title": "넓은 아일랜드 - 수납·상판만", "kind": "아일랜드: 비움", "spec": "아일랜드 위에 싱크/인덕션을 두지 않고 수납+작업대+식탁 역할만. 가장 깔끔한 대면형.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-500232646897792.jpg?c=c&h=640&w=960&k=4", "src": "https://contents.ohou.se/projects/196235", "project": "한강센트럴자이 참고", "verified": false, "popular": true}, {"id": "ks5", "cat": "kstruct", "title": "아일랜드 - 인덕션만", "kind": "아일랜드: 인덕션", "spec": "싱크는 벽면, 인덕션은 아일랜드. 요리하면서 거실을 보는 대면형.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-383090046951424.jpg?c=c&h=720&w=720&k=5", "src": "https://contents.ohou.se/projects/196235", "project": "한강센트럴자이", "verified": true, "popular": true}, {"id": "ks6", "cat": "kstruct", "title": "아일랜드 - 인덕션 + 후드", "kind": "아일랜드: 인덕션", "spec": "상부장을 줄이고 아일랜드에 인덕션/아일랜드 후드 배치. 수납을 아일랜드 앞뒤로 확보.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-478437226872896.jpg?c=c&h=640&w=960&k=6", "src": "https://contents.ohou.se/projects/192330", "project": "호반베르디움 33평", "verified": true, "popular": true}, {"id": "ks7", "cat": "kstruct", "title": "아일랜드 - 후드 일체형 인덕션", "kind": "아일랜드: 인덕션", "spec": "천장 후드를 없애고 후드 내장형 인덕션을 아일랜드에 배치. 시야 개방 최우선.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-489304191352960.jpg?c=c&h=720&w=720&k=7", "src": "https://contents.ohou.se/projects/187747", "project": "동탄 30평대", "verified": true, "popular": false}, {"id": "ks8", "cat": "kstruct", "title": "아일랜드 - 수전·싱크 + 조리대", "kind": "아일랜드: 싱크", "spec": "아일랜드에 싱크볼/수전을 두고 벽면 또는 반대쪽에 인덕션을 두는 타입. 설거지/준비 작업이 거실 쪽을 향함.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-383090046951424.jpg?c=c&h=720&w=720&k=8", "src": "https://contents.ohou.se/projects/161489", "project": "오픈 주방 참고", "verified": false, "popular": false}, {"id": "e1", "cat": "entry", "title": "화이트 3연동 + 모루유리", "kind": "3연동", "spec": "화이트 프레임, 불투명/모루유리. 가장 무난한 밝은 타입.", "img": "https://image.ohousecdn.com/i/bucketplace-v2-development/uploads/cards/project/172232849841986345.jpg?c=c&h=480&q=80&w=480", "src": "https://ohou.se/cards/feed?query=%EB%AA%A8%EB%A3%A8%EC%84%B8%EB%A1%9C%EC%9C%A0%EB%A6%AC", "project": "중문 참고", "verified": false, "popular": true}, {"id": "e2", "cat": "entry", "title": "화이트 3연동 + 투명유리", "kind": "3연동", "spec": "현관이 좁을 때 개방감 우수. 신발장/현관이 정돈돼 있어야 잘 어울림.", "img": "https://image.hanssem.com/hsimg/upload/homeIdea/2022/05/12/1652354394828_0.jpg", "src": "https://mall.hanssem.com/homeIdeaMain/contents/homeIdeaDetail.do?seq=7984", "project": "한샘 시공 참고", "verified": true, "popular": true}, {"id": "e3", "cat": "entry", "title": "우드 간살 원슬라이딩", "kind": "원슬라이딩", "spec": "우드 프레임과 간살로 화이트&우드 집에 포인트.", "img": "https://s3.ap-northeast-2.amazonaws.com/younglim-bucket/6806a83e-72b9-45c5-bc90-583bcc973cbe.jpeg", "src": "https://www.yl.co.kr/interiorSolution/houseTour/detail?ii_index=275", "project": "영림 시공 참고", "verified": true, "popular": false}, {"id": "e4", "cat": "entry", "title": "화이트골드 교차간살 원슬라이딩", "kind": "원슬라이딩", "spec": "투명유리 + 교차 간살. 열었을 때 통로 폭을 넓게 확보.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-500232646897792.jpg?c=c&h=640&w=960&entry=4", "src": "https://contents.ohou.se/projects/200067", "project": "신동백 34평", "verified": true, "popular": false}, {"id": "e5", "cat": "entry", "title": "1도어 여닫이 중문", "kind": "여닫이", "spec": "현관 폭이 충분하면 가장 단순하고 밀폐감이 좋은 1도어 타입.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-525422158188672.jpg?c=c&h=640&w=960&entry=5", "src": "https://contents.ohou.se/projects/197890", "project": "에코타운 30평대", "verified": true, "popular": false}, {"id": "e6", "cat": "entry", "title": "비대칭 여닫이 + 모루유리", "kind": "스윙/여닫이", "spec": "한쪽은 넓고 한쪽은 좁은 비대칭 도어. 가구 반입 시 넓게 열 수 있음.", "img": "https://blog.kakaocdn.net/dna/bo1qKR/btqXQ5Q8F2Z/AAAAAAAAAAAAAAAAAAAAADP4jUD5ZWlu2NXW4HPk8lxWTLJEWfG-T16uv7OY_Jad/img.jpg?allow_ip=&allow_referer=", "src": "https://contents.ohou.se/projects/145930", "project": "연수풍림3차 30평", "verified": true, "popular": false}, {"id": "e7", "cat": "entry", "title": "패브릭 접합유리 슬라이딩", "kind": "원슬라이딩", "spec": "빛은 통과시키면서 현관 내부는 부드럽게 가리는 타입.", "img": "https://m.igdoor.com/web/product/extra/big/202512/f9c8ccbd4d2abad3924bb49010575c3d.jpg", "src": "https://m.igdoor.com/product/1211", "project": "아이지도어 참고", "verified": true, "popular": false}, {"id": "e8", "cat": "entry", "title": "중문 없음 - 오픈 현관", "kind": "중문 없음", "spec": "중문을 없애 개방감을 극대화. 단열/냄새/프라이버시보다 공간감을 우선하는 선택.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-478437226872896.jpg?c=c&h=640&w=960&entry=8", "src": "https://contents.ohou.se/projects/192330", "project": "호반베르디움 33평", "verified": true, "popular": false}, {"id": "d1", "cat": "door", "title": "9mm 문선 + 화이트 민자도어", "kind": "얇은 문선", "spec": "완전 무문선보다 시공 부담이 낮으면서 선을 얇게 정리. 실사용에서 많이 선택되는 타입.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-517644707500160.jpg?c=c&h=640&w=960&door=1", "src": "https://contents.ohou.se/projects/200220", "project": "명지 30평", "verified": true, "popular": true}, {"id": "d2", "cat": "door", "title": "무문선 화이트 도어", "kind": "무문선", "spec": "벽과 문이 최대한 한 면처럼 보이는 미니멀 타입.", "img": "https://jmdesign.kr/web/upload/NNEditor/20211105/copy-1636077902-1.jpg", "src": "https://jmdesign.kr/board/gallery/read.html?no=1946&board_no=8", "project": "광교 자연앤자이 39평", "verified": true, "popular": false}, {"id": "d3", "cat": "door", "title": "루버 히든도어", "kind": "히든도어", "spec": "문을 숨기면서 루버 우드를 포인트로 사용하는 방식.", "img": "https://jmdesign.kr/web/upload/NNEditor/20211105/EBB3B5EB8F842.jpg", "src": "https://jmdesign.kr/board/gallery/read.html?no=1946&board_no=8", "project": "광교 자연앤자이 39평", "verified": true, "popular": false}, {"id": "d4", "cat": "door", "title": "내추럴 우드 방문 + 화이트 벽", "kind": "우드도어", "spec": "방문 자체를 포인트로 쓰는 화이트&우드 조합.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-517644707500160.jpg?c=c&h=640&w=960&door=4", "src": "https://contents.ohou.se/projects/200220", "project": "30평 우드도어 사례", "verified": false, "popular": false}, {"id": "d5", "cat": "door", "title": "화이트 문 + 블랙 레버", "kind": "미니멀 도어", "spec": "문과 문선은 화이트로 숨기고 손잡이만 블랙으로 포인트.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-506657146503296.png?c=c&h=640&w=960&door=5", "src": "https://contents.ohou.se/projects/200490", "project": "래미안삼성 41평", "verified": true, "popular": false}, {"id": "d6", "cat": "door", "title": "히든도어 + 벽 마감 연속", "kind": "히든도어", "spec": "도어에 벽지/필름을 연속 적용해 문 존재를 최소화.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-500232646897792.jpg?c=c&h=640&w=960&door=6", "src": "https://contents.ohou.se/projects/200067", "project": "신동백 34평", "verified": true, "popular": false}, {"id": "li1", "cat": "light", "title": "우물천장 + 사방 간접 + 실링팬", "kind": "우물천장", "spec": "가장 인기 있는 조합 중 하나. T5 간접 + 다운라이트 + 실링팬.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-517644707500160.jpg?c=c&h=640&w=960&light=1", "src": "https://contents.ohou.se/projects/200220", "project": "명지 30평", "verified": true, "popular": true}, {"id": "li2", "cat": "light", "title": "우물천장 + 간접 + 실링팬 + 커튼박스 간접", "kind": "우물+커튼박스", "spec": "우물 사방 간접에 창가 간접까지 더한 풍부한 야간 무드.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-452789272637504.jpg?c=c&h=640&w=960&light=2", "src": "https://contents.ohou.se/projects/188002", "project": "30평 리모델링", "verified": true, "popular": true}, {"id": "li3", "cat": "light", "title": "평천장 + 실링팬 + 다운라이트", "kind": "평천장", "spec": "우물 목공 없이 팬과 작은 매입등만. 깔끔하고 비용 부담이 적음.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-471255130693696.jpg?c=c&h=640&w=960&light=3", "src": "https://contents.ohou.se/projects/190715", "project": "당산 25평", "verified": false, "popular": true}, {"id": "li4", "cat": "light", "title": "평천장 + 다운라이트만", "kind": "무메인등", "spec": "메인등/실링팬 없이 2·3인치 다운라이트를 분산 배치.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-525422158188672.jpg?c=c&h=640&w=960&light=4", "src": "https://contents.ohou.se/projects/202117", "project": "미사 35평", "verified": true, "popular": true}, {"id": "li5", "cat": "light", "title": "평천장 + 라인조명", "kind": "라인조명", "spec": "긴 라인조명으로 시선을 잡고 다운라이트를 보조로 사용.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-506657146503296.png?c=c&h=640&w=960&light=5", "src": "https://contents.ohou.se/projects/171269", "project": "33평 모던 사례", "verified": true, "popular": false}, {"id": "li6", "cat": "light", "title": "우물천장 + 간접, 실링팬 없음", "kind": "우물천장", "spec": "팬 없이 우물 간접만 강조. 천장 중심이 더 정돈돼 보이는 타입.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-525422158188672.jpg?c=c&h=640&w=960&light=6", "src": "https://contents.ohou.se/projects/202117", "project": "미사 35평", "verified": false, "popular": false}, {"id": "li7", "cat": "light", "title": "커튼박스 간접 + 다운라이트", "kind": "커튼박스", "spec": "천장 공사는 최소화하고 창가에서만 은은하게 빛이 나오는 조합.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-383090046951424.jpg?c=c&h=720&w=720&light=7", "src": "https://contents.ohou.se/projects/187747", "project": "동탄 30평대", "verified": true, "popular": false}, {"id": "li8", "cat": "light", "title": "라운드 우물천장 + 2색 간접", "kind": "라운드 우물", "spec": "우물 T5는 주백색, 커튼박스/TV·소파 쪽은 전구색처럼 색온도를 나누는 타입.", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-478437226872896.jpg?c=c&h=640&w=960&light=8", "src": "https://contents.ohou.se/projects/134595", "project": "46평 화이트 모던", "verified": true, "popular": false}, {"id": "kf1", "cat": "kfinish", "title": "냉장고·김치냉장고 키친핏 장", "kind": "냉장고장", "spec": "냉장고 깊이를 장과 맞춰 돌출감을 최소화", "img": "https://image.ohousecdn.com/i/bucketplace-v2-development/uploads/cards/projects/165639417100757719.jpg?c=c&h=480&q=80&w=480", "src": "https://ohou.se/productions/1267209/used_card", "project": "키친핏 시공 참고", "verified": true}, {"id": "kf2", "cat": "kfinish", "title": "후드 숨김 + 홈바장", "kind": "후드/홈바", "spec": "후드 존재감을 줄이고 홈바 오픈장을 포인트로 쓰는 방식", "img": "https://octapi.lxzin.com/interior/vImgFileSeq/202510/01/fbf42496-a156-4be1-ae5c-66ed52985aad.png", "src": "https://www.lxzin.com/styling/expert-style/detail/7878", "project": "구미 30평 주방", "verified": true}, {"id": "kf3", "cat": "kfinish", "title": "매트 화이트 + 우드 포인트", "kind": "가구 마감", "spec": "화이트 도어를 기본으로 우드 오픈장을 소량 넣는 구성", "img": "https://jmdesign.kr/web/upload/NNEditor/20211105/EB9190EAB09C1.jpg", "src": "https://jmdesign.kr/board/gallery/read.html?no=1946&board_no=8&search=%EA%B4%91%EA%B5%90&search_key=subject&search_date=all&page=1", "project": "광교 자연앤자이 39평", "verified": true}, {"id": "kf4", "cat": "kfinish", "title": "키큰장 일체형 + 대형 수납", "kind": "키큰장", "spec": "오븐·전자레인지·팬트리까지 세로 수납으로 묶는 타입", "img": "https://jmdesign.kr/web/upload/NNEditor/20211105/copy-1636076979-1.jpg", "src": "https://jmdesign.kr/board/gallery/read.html?no=1946&board_no=8&search=%EA%B4%91%EA%B5%90&search_key=subject&search_date=all&page=1", "project": "광교 자연앤자이 39평", "verified": true}, {"id": "kf5", "cat": "kfinish", "title": "투톤 하부장 + 상부장 간접조명", "kind": "상·하부장", "spec": "상부장은 크림, 하부장은 그린/그레이지처럼 톤을 나누는 방식", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-500211071369344.jpg?c=c&h=640&w=960&finish=1", "src": "https://contents.ohou.se/projects/196229", "project": "32평 디큐디자인", "verified": true}, {"id": "b11", "cat": "bath1", "title": "밝은 그레이 600각 + 샤워존", "kind": "공용욕실", "spec": "밝은 그레이, 파티션 최소화, 단정한 샤워존", "img": "https://jmdesign.kr/web/upload/NNEditor/20211105/EC9A95EC8BA42.jpg", "src": "https://jmdesign.kr/board/gallery/read.html?no=1946&board_no=8&search=%EA%B4%91%EA%B5%90&search_key=subject&search_date=all&page=1", "project": "광교 자연앤자이 39평", "verified": false}, {"id": "b12", "cat": "bath1", "title": "그레이 포세린 + 유리 파티션", "kind": "공용욕실", "spec": "벽·바닥 그레이 통일, 프레임리스 유리 파티션", "img": "https://octapi.lxzin.com/imageBlockProp/image/202208/19/720/0/df37651d-edd4-4b30-af22-41ed9ce94b0e.jpg", "src": "https://www.lxzin.com/styling/expert-style/detail/1189", "project": "LX Z:IN 욕실 사례", "verified": true}, {"id": "b13", "cat": "bath1", "title": "욕조 유지 + 300×600 그레이", "kind": "공용욕실", "spec": "욕조를 남기고 거울장 하부 간접조명 추가", "img": "https://cdn.imweb.me/upload/S202212125f5083a800ba6/a52c5ceccb042.jpg", "src": "https://tophanssem.com/24/?bmode=view&idx=125269869", "project": "한샘 욕실 사례", "verified": true}, {"id": "b14", "cat": "bath1", "title": "호텔식 세면대 + 우드 하부장", "kind": "공용욕실", "spec": "넓은 상판, 플로팅 우드장, 간접거울", "img": "https://contents-cdn.viewus.co.kr/image/2026/03/CP-2023-0097/image-f10d4160-ab90-4051-be3c-201868cc80e9.jpeg", "src": "https://thehousemagazine.kr/interior/article/70070/", "project": "모던 욕실 참고", "verified": false}, {"id": "b15", "cat": "bath1", "title": "베이지 대형타일 + 건식 느낌", "kind": "공용욕실", "spec": "베이지 대형타일, 매립형 수납/조명으로 호텔 느낌", "img": "https://www.caesar.it/assets/Uploads/_resampled/ScaleWidthWyIxMjAwIl0/SIGNIEL-RESIDENCES-25.jpg", "src": "https://www.caesar.it/realizzazioni/spazi-residenziali/un-progetto-residenziale-nella-lotte-world-tower-di-seoul/", "project": "시그니엘 레지던스 참고", "verified": true}, {"id": "b21", "cat": "bath2", "title": "베이지 + 우드 포인트 + 욕조", "kind": "안방욕실", "spec": "베이지 타일에 우드 수납/템바 포인트, 욕조 포함", "img": "https://jmdesign.kr/web/upload/NNEditor/20211105/copy-1636077547-3.jpg", "src": "https://jmdesign.kr/board/gallery/read.html?no=1946&board_no=8&search=%EA%B4%91%EA%B5%90&search_key=subject&search_date=all&page=1", "project": "광교 자연앤자이 39평", "verified": false}, {"id": "b22", "cat": "bath2", "title": "베이지 워크인 샤워 + 유리", "kind": "안방욕실", "spec": "욕조 없이 샤워 공간에 집중. 유리 파티션으로 개방감 유지", "img": "https://cdn.imweb.me/upload/S20200616b44f234ea07d9/ec6ab9fb3d53f.jpg", "src": "https://designziban.com/29/?bmode=view&idx=161180966", "project": "46평 안방욕실 사례", "verified": true}, {"id": "b23", "cat": "bath2", "title": "600각 베이지 + 조적 욕조", "kind": "안방욕실", "spec": "큰 타일과 조적식/타일마감 욕조로 일체감 강조", "img": "https://image.hanssem.com/hsimg/upload/homeIdea/2022/11/18/1668757151145_0.jpg", "src": "https://mall.hanssem.com/homeIdeaMain/contents/homeIdeaDetail.do?seq=9813", "project": "당산 래미안 43평", "verified": true}, {"id": "b24", "cat": "bath2", "title": "욕조 + 간접 거울장", "kind": "안방욕실", "spec": "욕조를 유지하면서 세면대/거울장에 조명 포인트", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/v1-267076332261376.jpg?c=c&h=480&q=80&w=480", "src": "https://m.ohou.se/productions/2309445/used_card", "project": "오늘의집 욕조 사례", "verified": false}, {"id": "b25", "cat": "bath2", "title": "밝은 베이지 호텔식 욕실", "kind": "안방욕실", "spec": "베이지 포세린, 벽걸이 세면대, 수납을 최소화한 타입", "img": "https://dnvefa72aowie.cloudfront.net/business-profile/bizPlatform/profile/79872442/1717587484955/NTg2MmUxN2Y0ZTBlNWM3ZmE0Y2NkNjg2OTNmOThiNTFjZDRlMWQyY2I1MmM0MTQzODkxMGI0Y2U1ZmYxMjk5MF8wLmpwZWc%3D.jpeg?q=95&s=1440x1440&t=inside", "src": "https://www.daangn.com/kr/business-post/", "project": "욕실 리모델링 참고", "verified": false}, {"id": "fi1", "cat": "film", "title": "화이트 창틀 필름", "kind": "샤시 필름", "spec": "기존 진한 창틀을 화이트로 밝게. 뷰 분할감을 줄임", "img": "https://image.ohousecdn.com/i/bucketplace-v2-development/uploads/cards/projects/169280541891833845.jpg?c=c&h=480&q=80&w=480", "src": "https://ohou.se/advices/6509", "project": "화이트 창틀 필름 참고", "verified": false}, {"id": "fi2", "cat": "film", "title": "우드톤 창틀", "kind": "창호 톤", "spec": "내추럴 우드 프레임으로 창 자체를 인테리어 포인트로 사용", "img": "https://octapi.lxzin.com/imageBlockProp/image/202505/20/720/0/292bb369-6eea-4765-9d54-3a739c1d0b8d.png", "src": "https://www.lxzin.com/styling/house/detail/7307", "project": "LX 뷰프레임 참고", "verified": true}, {"id": "fi3", "cat": "film", "title": "화이트 샤시 + 웜화이트 벽", "kind": "샤시 필름", "spec": "창틀과 벽을 비슷한 화이트로 맞춰 프레임 존재감 감소", "img": "https://jmdesign.kr/web/upload/NNEditor/20211105/2.jpg", "src": "https://jmdesign.kr/board/gallery/read.html?no=1946&board_no=8&search=%EA%B4%91%EA%B5%90&search_key=subject&search_date=all&page=1", "project": "광교 자연앤자이 39평", "verified": false}, {"id": "fi4", "cat": "film", "title": "그레이지 창틀/도어 톤", "kind": "필름 조합", "spec": "순백보다 한 톤 낮춘 그레이지. 오염이 덜 도드라지는 타입", "img": "https://prs.ohousecdn.com/apne2/content/uploads/cards/project/v1-408647647846464.jpg?c=c&h=640&w=960", "src": "https://contents.ohou.se/projects/180945", "project": "34평 리모델링 사례", "verified": false}, {"id": "fi5", "cat": "film", "title": "화이트 프레임 + 쉬어커튼", "kind": "창호/패브릭", "spec": "창틀은 밝게 두고 쉬어커튼으로 프레임 대비를 줄이는 방식", "img": "https://image.ohousecdn.com/i/bucketplace-v2-development/uploads/cards/snapshots/161655279112258146.jpeg?c=c&h=480&q=80&w=480&webp=1", "src": "https://m.ohou.se/productions/1886768/used_card?selected_id=27163105", "project": "오늘의집 스타일링 참고", "verified": false}, {"id": "dr1", "cat": "dress", "title": "11자 오픈 시스템행거", "kind": "오픈 행거", "spec": "양쪽 벽에 평행하게 행거를 배치. 좁고 긴 방에 효율적", "img": "https://image.ohousecdn.com/i/bucketplace-v2-development/uploads/cards/project/169380583526688290.jpg?c=c&h=480&q=80&w=480&webp=1", "src": "https://ohou.se/cards/feed?query=11%EC%9E%90%EB%93%9C%EB%A0%88%EC%8A%A4%EB%A3%B8", "project": "오늘의집 드레스룸 참고", "verified": false}, {"id": "dr2", "cat": "dress", "title": "작은방 전체를 드레스룸으로", "kind": "방 전환", "spec": "방 하나를 옷방으로 쓰고 시스템장 + 스타일러 자리를 확보", "img": "https://static.hyundailivart.co.kr/upload_mall/board/ME00000029/B200065915/tplt/0000237888_20231203115356225.jpg?AO=1&QT=60", "src": "https://www.hyundailivart.co.kr/community/export/B200065915?pagecode=D000000475", "project": "리바트 33평 사례", "verified": true}, {"id": "dr3", "cat": "dress", "title": "가벽으로 안방에서 분리", "kind": "가벽형", "spec": "안방 일부를 가벽으로 나눠 옷방과 화장대를 만드는 방식", "img": "https://image.ohousecdn.com/i/bucketplace-v2-development/uploads/projects/cover_images/166331312218024544.jpg?w=720", "src": "https://contents.ohou.se/projects/126908", "project": "33평 가벽 드레스룸", "verified": true}, {"id": "dr4", "cat": "dress", "title": "유리 슬라이딩 도어 드레스룸", "kind": "유리도어형", "spec": "블랙 프레임 유리도어로 분리. 먼지 차단과 쇼룸 느낌", "img": "https://redoor-public.s3.amazonaws.com/construct-cases/1775205563381-a76e4e56-c403-472f-83a6-b93e1fd25db6.png", "src": "https://redoor.co.kr/portfolio/48", "project": "리도어홈즈 사례", "verified": true}, {"id": "dr5", "cat": "dress", "title": "화장대 + 오픈 시스템장", "kind": "파우더 결합형", "spec": "화장대를 입구에 두고 안쪽을 시스템행거로 구성", "img": "https://image.hanssem.com/hsimg/upload/homeIdea/2023/01/31/1675153259128_0.jpg", "src": "https://mall.hanssem.com/homeIdeaMain/contents/homeIdeaDetail.do?seq=17021", "project": "한샘 32평 사례", "verified": true}]};
+
+let active = DATA.categories[0].id;
+let selections = {};
+
+try {
+  selections = JSON.parse(localStorage.getItem("interior-v4-selections") || "{}");
+} catch (e) {
+  selections = {};
+}
+
+const params = new URLSearchParams(location.search);
+if (params.get("s")) {
+  try {
+    selections = JSON.parse(decodeURIComponent(atob(params.get("s"))));
+  } catch (e) {}
+}
+
+function getCategory(id) {
+  return DATA.categories.find(c => c.id === id);
+}
+
+function getCards(id) {
+  return DATA.cards.filter(c => c.cat === id);
+}
+
+function saveSelections() {
+  localStorage.setItem("interior-v4-selections", JSON.stringify(selections));
+}
+
+function renderTabs() {
+  const el = document.getElementById("tabs");
+  el.innerHTML = "";
+
+  [...DATA.categories, {id:"result", label:"선택 결과"}].forEach(c => {
+    const b = document.createElement("div");
+    b.className = "tab" + (active === c.id ? " active" : "");
+    const countText = c.id === "result" ? "" : " (" + getCards(c.id).length + ")";
+    b.textContent = c.label + countText;
+    b.onclick = () => {
+      active = c.id;
+      render();
+    };
+    el.appendChild(b);
+  });
+}
+
+function cycleSelection(card) {
+  if (!selections[card.cat]) selections[card.cat] = {};
+  const current = selections[card.cat][card.id];
+
+  if (!current) {
+    Object.keys(selections[card.cat]).forEach(k => {
+      if (selections[card.cat][k] === "primary") {
+        selections[card.cat][k] = "ref";
+      }
+    });
+    selections[card.cat][card.id] = "primary";
+  } else if (current === "primary") {
+    selections[card.cat][card.id] = "ref";
+  } else {
+    delete selections[card.cat][card.id];
+  }
+
+  const keys = Object.keys(selections[card.cat]);
+  if (keys.length > 3) {
+    const firstRef = keys.find(k => selections[card.cat][k] === "ref");
+    if (firstRef) delete selections[card.cat][firstRef];
+  }
+
+  saveSelections();
+  renderCards();
+}
+
+function imageMarkup(card) {
+  return '<img src="' + card.img + '" alt="' + card.title.replace(/"/g, "&quot;") + '" loading="lazy" onerror="this.style.opacity=.25">';
+}
+
+function renderCards() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  getCards(active).forEach(card => {
+    const state = (selections[card.cat] || {})[card.id];
+    const article = document.createElement("article");
+    article.className = "card " + (state === "primary" ? "primarySel" : state === "ref" ? "refSel" : "");
+
+    article.innerHTML =
+      '<div class="imgwrap">' +
+        imageMarkup(card) +
+        '<div class="badges">' +
+          '<span class="badge">' + card.kind + '</span>' +
+          (card.verified ? '<span class="badge verified">사양 확인</span>' : '') + (card.popular ? '<span class="badge">자주 쓰는 조합</span>' : '') +
+        '</div>' +
+        '<span class="sel">' + (state === "primary" ? "★ 대표" : "참고") + '</span>' +
+      '</div>' +
+      '<div class="meta">' +
+        '<div class="title">' + card.title + '</div>' +
+        '<div class="spec">' + card.spec + '</div>' +
+        '<div class="project">' + card.project + ' · <a href="' + card.src + '" target="_blank">원본/출처 보기 ↗</a></div>' +
+        '<div class="hint">사진 클릭: 대표 ★ → 참고 → 해제</div>' +
+      '</div>';
+
+    article.querySelector(".imgwrap").onclick = () => cycleSelection(card);
+    grid.appendChild(article);
+  });
+}
+
+function renderResult() {
+  const summary = document.getElementById("summary");
+  summary.innerHTML = "";
+  let any = false;
+
+  DATA.categories.forEach(category => {
+    const selected = selections[category.id] || {};
+    const ids = Object.keys(selected);
+    if (!ids.length) return;
+
+    any = true;
+    ids.sort((a,b) => {
+      if (selected[a] === "primary") return -1;
+      if (selected[b] === "primary") return 1;
+      return 0;
+    });
+
+    const box = document.createElement("div");
+    box.className = "sum";
+    box.innerHTML = "<h3>" + category.label + "</h3>";
+
+    ids.forEach(id => {
+      const card = DATA.cards.find(c => c.id === id);
+      if (!card) return;
+
+      box.innerHTML +=
+        '<div class="sumitem">' +
+          '<div class="pic">' + imageMarkup(card) + '</div>' +
+          '<div><b>' + (selected[id] === "primary" ? "★ 대표" : "참고") + '</b> · ' + card.title +
+          '<br>' + card.spec +
+          '<br><a href="' + card.src + '" target="_blank">원본 보기 ↗</a></div>' +
+        '</div>';
+    });
+
+    summary.appendChild(box);
+  });
+
+  if (!any) {
+    summary.innerHTML = '<div class="empty">아직 선택한 항목이 없습니다.</div>';
+  }
+}
+
+function render() {
+  renderTabs();
+
+  const showingResult = active === "result";
+  document.getElementById("cardSection").classList.toggle("hidden", showingResult);
+  document.getElementById("resultSection").classList.toggle("hidden", !showingResult);
+
+  const guide = document.getElementById("guide");
+
+  if (showingResult) {
+    guide.innerHTML = '<strong>업체 전달용 선택 결과</strong><div class="small">각 항목에서 ★ 대표 1개와 참고 최대 2개를 모아 보여줍니다.</div>';
+    renderResult();
+  } else {
+    const category = getCategory(active);
+    guide.innerHTML = '<strong>' + category.label + '</strong><div class="small">' + category.desc + '</div>';
+    renderCards();
+  }
+}
+
+document.getElementById("resetBtn").onclick = () => {
+  if (confirm("선택을 전부 초기화할까요?")) {
+    selections = {};
+    saveSelections();
+    render();
+  }
+};
+
+document.getElementById("shareBtn").onclick = async () => {
+  const encoded = btoa(encodeURIComponent(JSON.stringify(selections)));
+  const url = new URL(location.href);
+  url.searchParams.set("s", encoded);
+
+  try {
+    await navigator.clipboard.writeText(url.toString());
+    alert("선택 상태가 포함된 링크를 복사했습니다.\n웹에 올린 뒤 사용하면 다른 사람에게도 같은 선택 상태로 공유할 수 있습니다.");
+  } catch (e) {
+    prompt("아래 링크를 복사하세요.", url.toString());
+  }
+};
+
+render();
+</script>
+</body>
+</html>
