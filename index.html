@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>인테리어 견적 비교표 v4.3</title>
+<style>
+:root{--bg:#f5f3ef;--card:#fff;--line:#ddd8d0;--text:#222;--muted:#746f68;--accent:#2f6fed;--red:#c7362f;--orange:#d98200;--green:#2e7d32}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text)}
+header{position:sticky;top:0;z-index:30;background:rgba(245,243,239,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top{max-width:1900px;margin:auto;padding:17px 22px 11px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+h1{font-size:23px;margin:0}.sub{font-size:13px;color:var(--muted);margin-top:4px}
+.tabs{max-width:1900px;margin:auto;padding:0 22px 12px;display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;-webkit-overflow-scrolling:touch;white-space:nowrap}
+.tab{flex:0 0 auto;white-space:nowrap;padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:13px;font-weight:700;cursor:pointer}.tab.active{background:#222;color:#fff;border-color:#222}
+main{max-width:1900px;margin:auto;padding:18px 22px 60px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:15px;padding:15px;margin-bottom:15px}.panel h2{font-size:18px;margin:0 0 10px}
+.vendor-grid{display:grid;grid-template-columns:repeat(4,minmax(245px,1fr));gap:10px}.vendor{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fff}.vendor h3{margin:0 0 6px;font-size:16px}
+.money{font-size:21px;font-weight:850}.small{font-size:12px;color:var(--muted);line-height:1.5}.kpis{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.kpi{background:#f8f7f4;border-radius:9px;padding:8px}.kpi b{display:block;margin-top:3px}
+.warn{background:#fff8ec;border-left:5px solid var(--orange);border-radius:10px;padding:11px;font-size:13px;line-height:1.55;margin-top:10px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.scope{border:1px solid var(--line);border-radius:11px;padding:10px}.scope b{display:block;margin-bottom:4px}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:13px;background:#fff}
+table{border-collapse:collapse;width:100%;min-width:1350px}th,td{border-bottom:1px solid #ece7df;border-right:1px solid #eee9e2;padding:8px 9px;vertical-align:top;font-size:12px}th{position:sticky;top:0;background:#f2f0ec;z-index:3}
+th:first-child,td:first-child{position:sticky;left:0;background:#faf9f6;z-index:2;min-width:95px}th:nth-child(2),td:nth-child(2){position:sticky;left:95px;background:#fff;z-index:2;min-width:230px}
+.amount{font-weight:850}.high{color:var(--red);background:#fff0ef;font-weight:900}.mid{color:var(--orange);background:#fff7e8;font-weight:850}.low{color:var(--green)}.subtotal-row td{background:#f0f4fb!important;font-weight:850;border-top:2px solid #b9c8e6}.subtotal-label{font-size:13px}.diff{font-size:11px;margin-top:4px;color:var(--muted)}.diff.up{color:var(--red);font-weight:800}.diff.down{color:var(--green);font-weight:800}
+.badge{display:inline-block;padding:3px 6px;border-radius:999px;background:#eee;font-size:10px;margin-top:4px}.inc{background:#e9f5eb;color:#28672e}.miss{background:#fff0e0;color:#8f5600}.none{background:#f0f0f0;color:#777}
+.hidden{display:none!important}.section{display:none}.section.active{display:block}
+.rawvendor{margin-bottom:20px}.rawvendor h3{margin:0 0 8px}.rawtable{min-width:980px}
+.note{font-size:12px;color:var(--muted);line-height:1.5}
+@media(max-width:900px){.vendor-grid{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}@media(max-width:600px){.vendor-grid{grid-template-columns:1fr}main{padding:12px}}
+</style></head>
+<body>
+<header><div class="top"><div><h1>인테리어 견적 비교표 v4.3</h1><div class="sub">카톡/모바일용 상단 메뉴 고정 · 공종별 소계 + 원견적 전체항목 + 정규화 비교 + 누락/별도 + 총액 비교</div></div></div><div class="tabs" id="tabs">
+      <div class="tab active" data-id="totals">총액 비교</div>
+      <div class="tab" data-id="raw">원견적 전체 항목</div>
+      <div class="tab" data-id="norm">정규화 비교</div>
+      <div class="tab" data-id="scope">누락/별도/포함</div>
+    </div></header>
+<noscript><div style="margin:12px 22px;padding:12px;border:1px solid #e0b35f;background:#fff8e8;border-radius:10px;font-family:Arial,'Apple SD Gothic Neo','Noto Sans KR',sans-serif">
+    이 페이지의 탭 전환 기능을 사용하려면 JavaScript가 필요합니다. 카카오톡에서 파일 자체를 열지 말고 웹주소로 공유하는 것을 권장합니다.
+    </div></noscript><main>
+<section id="totals" class="section active">
+  <div class="panel"><h2>총액 비교</h2><div id="vendorGrid" class="vendor-grid"></div>
+  <div class="warn"><b>동일조건 보정총액</b>은 VAT 포함 환산액 + 추가/제외 항목 보정액입니다. 현재 첫봄의 아일랜드 식탁·조적파티션 추가비가 미확정이라 보정액은 0원으로 두고 경고만 표시했습니다.</div></div>
+</section>
+
+<section id="raw" class="section">
+  <div class="panel"><h2>원견적 전체 항목</h2><div class="note">받은 견적서의 금액 라인을 최대한 그대로 옮긴 탭입니다. 업체별 항목명이 달라도 여기서는 원문 구조를 유지합니다.</div></div>
+  <div id="rawContainer"></div>
+</section>
+
+<section id="norm" class="section">
+  <div class="panel"><h2>정규화 비교</h2>
+  <div class="note">같은 의미의 항목을 공통 분류로 묶은 표입니다. 각 공종 시작 부분에 <b>공종 소계</b>를 먼저 보여주고, 그 아래 세부 항목을 펼쳐 비교합니다. <b>최저가 대비 30% 이상 높은 비교가능 금액은 빨강</b>, 15~30%는 주황으로 표시합니다. 공종 소계 역시 범위 차이가 있으므로 ‘비싸다’ 확정판정이 아니라 확인 우선순위로 보세요.</div></div>
+  <div class="tablewrap"><table id="normTable"></table></div>
+</section>
+
+<section id="scope" class="section">
+  <div class="panel"><h2>누락 / 별도 / 포함 비교</h2><div id="scopeGrid" class="grid2"></div></div>
+</section>
+</main>
+<script>
+const VENDORS=[{"id": "v1", "name": "수원조아인테리어", "quoteDate": "2026-09-08", "areaPyeong": 38, "quotedTotal": 68365000, "vatMode": "VAT포함", "vatIncludedTotal": 68365000, "adjustment": 0, "adjustmentNote": "현재 알려진 주요 선택항목은 견적 내 포함으로 보임", "note": "가견적 / 자연앤자이2단지 38평(127.48㎡)"}, {"id": "v2", "name": "첫봄디자인", "quoteDate": "2026-09-08", "areaPyeong": 38, "quotedTotal": 66560000, "vatMode": "VAT별도", "vatIncludedTotal": 73216000, "adjustment": 0, "adjustmentNote": "아일랜드 식탁 제외 / 조적파티션 별도 → 추가비 미확정", "note": "가견적 / 사용자 참고사항 반영"}, {"id": "v3", "name": "업체 3", "quoteDate": "", "areaPyeong": 38, "quotedTotal": 0, "vatMode": "미입력", "vatIncludedTotal": 0, "adjustment": 0, "adjustmentNote": "", "note": "미입력"}, {"id": "v4", "name": "업체 4", "quoteDate": "", "areaPyeong": 38, "quotedTotal": 0, "vatMode": "미입력", "vatIncludedTotal": 0, "adjustment": 0, "adjustmentNote": "", "note": "미입력"}, {"id": "v5", "name": "업체 5", "quoteDate": "", "areaPyeong": 38, "quotedTotal": 0, "vatMode": "미입력", "vatIncludedTotal": 0, "adjustment": 0, "adjustmentNote": "", "note": "미입력"}, {"id": "v6", "name": "업체 6", "quoteDate": "", "areaPyeong": 38, "quotedTotal": 0, "vatMode": "미입력", "vatIncludedTotal": 0, "adjustment": 0, "adjustmentNote": "", "note": "미입력"}, {"id": "v7", "name": "업체 7", "quoteDate": "", "areaPyeong": 38, "quotedTotal": 0, "vatMode": "미입력", "vatIncludedTotal": 0, "adjustment": 0, "adjustmentNote": "", "note": "미입력"}, {"id": "v8", "name": "업체 8", "quoteDate": "", "areaPyeong": 38, "quotedTotal": 0, "vatMode": "미입력", "vatIncludedTotal": 0, "adjustment": 0, "adjustmentNote": "", "note": "미입력"}];
+const RAW={"v1": [["철거 설비작업", "현관 바닥타일 철거 폐기물", 50000, ""], ["철거 설비작업", "현관 좌측 키큰신발장·우측 하프신발장 철거 폐기물", 50000, ""], ["철거 설비작업", "현관 중문 철거 폐기물", 50000, ""], ["철거 설비작업", "거실 욕실 철거", 300000, "세면기/수전/욕조/좌변기/세면기 등 액세서리"], ["철거 설비작업", "욕실 바닥·벽면 방수공사 포함 철거", 650000, "방수 2차 포함"], ["철거 설비작업", "입구 좌측방 붙박이장 철거", 100000, ""], ["철거 설비작업", "방 3곳·욕실2곳·세탁실 문짝 철거", 100000, ""], ["철거 설비작업", "거실·방 전체 천장 몰딩&걸레받이 철거", 250000, ""], ["철거 설비작업", "거실 우물천장 몰딩 철거", 0, "총액 내 포함/별도 금액 없음"], ["철거 설비작업", "주방 싱크대 상·하부장·인조대리석·기타 포함 철거", 250000, ""], ["철거 설비작업", "주방 벽타일 철거", 100000, ""], ["철거 설비작업", "아일랜드 하부장·주방 샤시하부 철거", 50000, ""], ["철거 설비작업", "냉장고장·키큰장 철거", 100000, ""], ["철거 설비작업", "드레스룸 화장대 철거", 50000, ""], ["철거 설비작업", "드레스룸 알파룸 입구 D2&2FIX, 시스템가구 철거", 200000, ""], ["철거 설비작업", "안방 욕실 철거", 350000, ""], ["철거 설비작업", "안방욕실 바닥·벽면 방수공사 포함 철거", 650000, ""], ["철거 설비작업", "안방 발코니 창고 도어&선반 철거", 50000, ""], ["철거 설비작업", "설비·콘센트 추가타공 및 기타 설비비", 200000, "기존 4개 5만원 / 추가 1개당 5만원"], ["철거 설비작업", "가스배관 철거 설비", 150000, "계량기 포함"], ["바닥재 철거", "주방 바닥 타일 철거", 800000, "샌딩비용 포함"], ["바닥재 철거", "거실·방 합판마루 철거", 1200000, "25평 / 바닥샌딩비용 포함"], ["목공", "거실·주방·방 전체 25mm PVC 마이너스 화이트 천장몰딩", 1000000, ""], ["목공", "거실·주방·방 전체 30mm 마루 화이트 걸레받이", 800000, ""], ["목공", "거실욕실 ABS 문짝 자재", 300000, "LX하우시스 ZN010 LX411 샌드화이트"], ["목공", "안방욕실 ABS 문짝 자재", 300000, "LX하우시스 ZN010 LX411 샌드화이트"], ["목공", "방 3곳 ABS 문짝 자재", 900000, ""], ["목공", "세탁실 ABS 문짝 자재", 300000, ""], ["목공", "도어 경첩 & 실린더(손잡이) 교체", 400000, ""], ["목공", "거실쪽 9mm 문선 / 방 안쪽 자재 문선마감", 900000, ""], ["목공", "거실 우물천장 간접등박스 작업", 0, "실링팬 보강작업 포함"], ["목공", "현관 방화문 안쪽 MDF 목공작업", 200000, ""], ["목공", "중문 시공부위 ㄷ자 틀 목공작업", 200000, ""], ["목공", "주방 타일 철거부분 벽면 석고작업", 200000, ""], ["목공", "드레스룸 입구 ㄷ자 게이트, 마감 & 안쪽 철거부분 마감", 300000, ""], ["목공", "거실 기둥 마감 MDF", 150000, ""], ["목공", "복도 마그네틱 조명 8M 목공작업", 200000, ""], ["목공", "주방 마그네틱 조명 4M 목공작업", 100000, ""], ["목공", "기타 타일 홀대 & 코너 줄대 마감", 150000, ""], ["조명전기", "전체 다운라이트 LED 등", 2200000, ""], ["조명전기", "거실 8인치 2개 추가", 200000, "실링팬 고객 제공"], ["조명전기", "복도 마그네틱 조명", 500000, ""], ["조명전기", "주방 마그네틱 조명", 300000, ""], ["조명전기", "기타 콘센트 추가 배선작업 및 외", 500000, ""], ["조명전기", "수위치&콘센트·감지기·스피커·배전판 교체", 600000, "르그랑 아펠라 / 화이트"], ["거실욕실", "전체철거·액세서리·카라칼럭스·욕실공", 4200000, "기본"], ["거실욕실", "600×600 벽·바닥 타일 업그레이드", 500000, ""], ["거실욕실", "하프조적 파티션 & 상부 유리파티션", 600000, ""], ["안방욕실", "전체철거·액세서리·카라칼럭스·욕실공", 4500000, "기본"], ["안방욕실", "600×600 벽·바닥 타일 업그레이드", 600000, ""], ["안방욕실", "하프조적 파티션 & 상부 유리파티션", 600000, ""], ["타일", "현관 바닥타일 시공", 400000, "600×600"], ["타일", "주방 벽타일 ㄱ자 시공", 700000, ""], ["타일", "발코니 바닥타일 시공", 700000, ""], ["필름", "현관 방화문 내부/외부", 300000, ""], ["필름", "중문 ㄷ자 틀", 100000, ""], ["필름", "방3·욕실2·세탁실 문틀", 900000, ""], ["필름", "거실 우물천장 간접 ㄱ자 틀", 100000, ""], ["필름", "거실 기둥 ㄱ자 4면", 150000, ""], ["필름", "샤시 17틀", 3800000, ""], ["필름", "다용도실 방화문 보이는면만", 150000, ""], ["도배", "LX하우시스 지인 실크 도배지 자재비", 900000, "115롤"], ["도배", "인건비 8 + 부자재 40", 2800000, "TC, 이동지, 삼중지, 친환경풀 외"], ["가구", "주방 싱크대 W5000", 3500000, "LX 친환경 E0 / 상부장 H720 2칸 / 하부장 H900"], ["가구", "키큰 가전장 W600", 200000, "레인지장/분동레인지장"], ["가구", "홈바장 W800~900", 800000, "상부수납풀 / 하부 3단 서랍장"], ["가구", "후드", 2000000, "하츠 빌트인 하이드 / LX 인조대리석 하이막스 오로라 비스크 12T"], ["가구", "싱크볼·수전", 500000, "백조 싱크볼 / 거위목 수전"], ["가구", "냉장고&김치냉장고&냉동고 키큰장", 1500000, "W2000*d750"], ["가구", "현관 행잉형 키큰신발장 좌측", 900000, "W1800"], ["가구", "현관 행잉형 키큰신발장 우측", 900000, "W1800"], ["가구", "입구 좌측방 여닫이 붙박이장", 900000, "W1640"], ["가구", "드레스룸 여닫이 붙박이장", 1500000, "W3100"], ["가구", "현관 원슬라이딩 초슬림중문", 1300000, "W1300 이내"], ["바이오세라믹", "발코니 바이오세라믹 코팅 4식", 1000000, "현관·다용도실·세탁실·안방 발코니"], ["바닥재", "구정마루 마뷸러스 젠 600×600 자재비", 4200000, ""], ["바닥재", "바닥재 인건비 & 시공 & 부자재비", 1800000, ""], ["기타사항", "철물", 300000, "현관문 도어체크·말굽·안전고리·방 자석스토퍼·욕실 고무스토퍼"], ["기타사항", "보일러 난방배관 청소", 150000, "분배기 배관 밸브교체·온도조절기 교체 별도"], ["기타사항", "입주청소", 600000, ""], ["기타사항", "비디오폰 교체", 350000, "기인치"], ["기타사항", "도어핸들 교체", 350000, "아펠라/무키시스템"], ["기타사항", "폐기물처리비", 200000, "각종 폐기물 1~4차 처리"], ["기타사항", "공과잡비", 800000, "현장경비&기타 마감비용"]], "v2": [["철거", "폐기물", 1900000, "혼합3번·목재3번·마무리 폐기물1번"], ["철거", "인건비", 500000, "2인"], ["철거", "기본철거", 2500000, "화장실1P 타일철거, 현관타일, 주방타일, 천장몰딩, 목재철거, 붙박이·가구 1개소"], ["철거", "화장실철거", 0, "철거 후 AC블록/벽돌 흔들릴 경우 협의"], ["철거", "바닥철거", 950000, "38평×2.5만원 / 맥반석마루일 경우 평당 1.5만원 추가"], ["철거", "실외기실", 0, ""], ["목공", "문/문틀", 2700000, "9미리 문선 기준 / 예림 민자도어·예림 크림화이트 필름"], ["목공", "목공자재", 1800000, "석고보드·우레탄폼·MDF·핑크보드·이보드·실리콘 등"], ["목공", "목공내용 인건비", 5250000, "중문/현관 알판목공·수간접 별도협의·단열 별도"], ["목공", "벽체", 1000000, "가벽/단열공사"], ["목공", "천장", 500000, "철거 후 재시공 평당 10만원 기준 보수비 예상"], ["목공", "목공양중", 250000, ""], ["확장", "단열포함", 0, "날개벽 별도 협의"], ["확장", "확장허가수수료", 0, ""], ["전기", "조명", 1800000, "거실/주방 2인치 다운라이트, 방 다운라이트 추가비 별도, 실링팬 조명"], ["전기", "전기인건비", 2700000, "9인"], ["전기", "콘센트·스위치", 500000, "르그랑 아펠라 화이트"], ["가구", "싱크대", 4800000, "자작합 가구·백조사각(sqs780)·파세코후드 기본형"], ["가구", "하부장", 600000, ""], ["가구", "냉장고장", 500000, ""], ["가구", "침실2 붙박이장", 800000, ""], ["가구", "안방붙박이장", 1760000, "11자"], ["가구", "신발장", 1400000, "2"], ["가구", "기타 가구", 0, "현장 실측 후 변동 가능성"], ["도배", "벽지", 5500000, "전체 디아망 회벽화이트 / 거실 무몰딩 / 방 계단몰딩 / 천장 화이트실크"], ["도배", "몰딩", 1900000, "거실 무몰딩, 방 계단몰딩 / 걸레받이 3전"], ["필름", "현관문·문틀 시공", 300000, "LX베니프 솔리드·현대보닥"], ["필름", "샤시필름", 3400000, "부속 제외"], ["중문", "원슬라이딩", 1000000, ""], ["코킹", "내부 코킹", 400000, ""], ["탄성", "에코 플라스터 탄성코트", 800000, ""], ["타일", "타일", 1200000, "현관600각 / 주방 1200×600각 또는 800×800각 / 베란다300각"], ["타일", "타일부자재", 900000, "레미탈25포·압착시멘트15포·에폭시10포·코너비드·유가 등"], ["타일", "타일양중", 500000, "인건비"], ["타일", "거실화장실", 1800000, "25만원 도기류·힘펠환풍기·600각 20박스 / 젠다이·졸리컷 1줄당 20만"], ["타일", "안방화장실", 1800000, "25만원 도기류·힘펠환풍기·600각 20박스 / 젠다이·졸리컷 1줄당 20만"], ["타일", "타일시공", 3000000, "인건비 10인"], ["욕실", "도기설치", 600000, "2인"], ["욕실", "SMC천정", 600000, "2"], ["욕실", "기본자재", 0, "아메리칸스탠다드/베르사츠/라온제 등, 견적서 포함 자재·미팅 후 변동 가능"], ["욕실", "별도 가능항목", 0, "도어락·인터폰·온도조절기·인터넷통신·샤워부스·조적파티션 등 별도"], ["기타", "세대동의", 200000, ""], ["기타", "승강기보양", 200000, ""], ["기타", "공과잡비", 2500000, "식대·잡비"], ["기타", "수익 및 관리비", 3000000, ""]]};
+const NORMALIZED=[["철거", "기본 철거", 3500000, 3000000, "수원조아는 세부철거 합산, 첫봄은 기본철거+인건비"], ["철거", "폐기물", 200000, 1900000, "첫봄 폐기물 190만원으로 큰 편"], ["철거", "바닥 철거", 2000000, 950000, ""], ["목공", "문/문틀 관련", 0, 2700000, "수원조아는 목공 전체에 섞여 있음"], ["목공", "기타 목공", 6200000, 7000000, "첫봄: 목공인건비+벽체+천장+양중"], ["전기/조명", "전기·조명", 4300000, 4500000, ""], ["욕실", "거실욕실", 5300000, 3900000, "첫봄은 공용 인건비 균등배분한 비교용 추정"], ["욕실", "안방욕실", 5700000, 3900000, "첫봄은 공용 인건비 균등배분한 비교용 추정"], ["욕실", "조적파티션", 1200000, 0, "첫봄 별도"], ["타일", "현관·주방·발코니", 1800000, 2600000, ""], ["도배", "벽지", 3700000, 5500000, "수원조아는 도배 전체, 첫봄은 벽지 라인"], ["도배", "몰딩", 0, 1900000, "수원조아는 목공/도배 포함 여부 확인"], ["필름", "일반 필름", 1700000, 300000, "수원조아는 총필름에서 샤시분 제외 환산"], ["필름", "샤시 필름", 3800000, 3400000, ""], ["가구", "주방 싱크대", 3500000, 4800000, ""], ["가구", "냉장고장", 1500000, 500000, ""], ["가구", "신발장", 1800000, 1400000, "수원조아 좌우측 각 90만원 기준"], ["가구", "붙박이장/드레스룸", 3300000, 2560000, "비교 가능한 붙박이장 중심"], ["중문", "원슬라이딩", 1300000, 1000000, ""], ["탄성", "탄성/바이오세라믹", 1000000, 800000, ""], ["바닥", "마루", 6000000, 4750000, "수원조아 마뷸러스 젠 / 첫봄 마뷸러스 리브"], ["기타", "공과잡비", 800000, 2500000, ""], ["기타", "수익·관리비", 0, 3000000, "수원조아 기업이윤 5% 문구만 있고 금액 라인 불명확"], ["기타", "입주청소", 600000, 0, "첫봄 별도"]];
+const SCOPE=[["VAT", "수원조아: 포함", "첫봄: 별도 (VAT 포함 환산 7,321.6만원)"], ["아일랜드 식탁", "수원조아: 포함 여부 재확인", "첫봄: 제외"], ["조적파티션", "수원조아: 거실/안방 포함", "첫봄: 별도"], ["입주청소", "수원조아: 포함", "첫봄: 별도"], ["마루", "수원조아: 마뷸러스 젠", "첫봄: 마뷸러스 리브"], ["도배", "수원조아: LX 실크/디아망·베스트 표기 혼재", "첫봄: 전체 디아망 회벽화이트"], ["샤시필름", "수원조아: 17틀 380만원", "첫봄: 340만원, 부속 제외"], ["중문", "수원조아: 원슬라이딩 130만원", "첫봄: 원슬라이딩 100만원"], ["3D비용", "수원조아: 미표기", "첫봄: 별도"], ["관리실/보증금", "수원조아: 미표기", "첫봄: 별도"], ["평일 17시 이후", "수원조아: 미표기", "첫봄: 추가금"]];
+
+function won(n){return Number(n||0).toLocaleString('ko-KR')+'원'}
+function man(n){return n?Math.round(n/10000).toLocaleString()+'만':'-'}
+function corrected(v){return (v.vatIncludedTotal||0)+(v.adjustment||0)}
+function tabs(){
+  let el=document.getElementById('tabs');
+  el.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+    document.getElementById(t.dataset.id).classList.add('active');
+  });
+}
+function renderTotals(){
+ document.getElementById('vendorGrid').innerHTML=VENDORS.map(v=>`<div class="vendor"><h3>${v.name}</h3><div class="money">${v.vatIncludedTotal?won(v.vatIncludedTotal):'견적 대기'}</div><div class="small">견적서 표기 ${v.quotedTotal?won(v.quotedTotal):'-'} · ${v.vatMode}<br>${v.note||''}</div><div class="kpis"><div class="kpi">VAT포함 환산<b>${man(v.vatIncludedTotal)}</b></div><div class="kpi">평당<b>${v.vatIncludedTotal?Math.round(v.vatIncludedTotal/v.areaPyeong/10000).toLocaleString()+'만':'-'}</b></div><div class="kpi">보정액<b>${v.adjustment?man(v.adjustment):'미반영'}</b></div><div class="kpi">동일조건 보정총액<b>${v.vatIncludedTotal?man(corrected(v)):'-'}</b></div></div><div class="small" style="margin-top:7px">${v.adjustmentNote||''}</div></div>`).join('');
+}
+function renderRaw(){
+ let c=document.getElementById('rawContainer');c.innerHTML='';
+ ['v1','v2'].forEach(id=>{
+   let v=VENDORS.find(x=>x.id===id), arr=RAW[id]||[];
+   let box=document.createElement('div');box.className='panel rawvendor';
+   let h=`<h3>${v.name} — 원견적 ${arr.length}개 금액 라인</h3><div class="tablewrap"><table class="rawtable"><thead><tr><th>공종</th><th>원견적 항목</th><th>금액</th><th>비고/사양</th></tr></thead><tbody>`;
+   arr.forEach(r=>{h+=`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="amount">${won(r[2])}</td><td>${r[3]||''}</td></tr>`});
+   h+='</tbody></table></div>';box.innerHTML=h;c.appendChild(box);
+ });
+}
+function highlight(a,b){
+ let vals=[a,b].filter(x=>x>0); if(vals.length<2)return['',''];
+ let min=Math.min(...vals); 
+ function one(x){if(!x)return'';let r=x/min;if(r>=1.30)return'high';if(r>=1.15)return'mid';if(r===1)return'low';return''}
+ return [one(a),one(b)];
+}
+function renderNorm(){
+ let h='<thead><tr><th>공종</th><th>비교 항목</th><th>수원조아인테리어</th><th>첫봄디자인</th><th>비교 메모</th></tr></thead><tbody>';
+ h+=`<tr class="subtotal-row">
+   <td class="subtotal-label">전체</td>
+   <td><b>VAT 포함 총액</b><div class="small">견적서 총액을 VAT 포함 기준으로 환산</div></td>
+   <td><span class="amount">${won(VENDORS[0].vatIncludedTotal)}</span></td>
+   <td><span class="amount">${won(VENDORS[1].vatIncludedTotal)}</span></td>
+   <td>수원조아: VAT 포함 / 첫봄: VAT 별도 견적을 10% 반영해 환산</td>
+ </tr>`;
+ let groups=[];
+ NORMALIZED.forEach(r=>{
+   let g=groups.find(x=>x.name===r[0]);
+   if(!g){g={name:r[0],rows:[]};groups.push(g);}
+   g.rows.push(r);
+ });
+
+ groups.forEach(g=>{
+   let total1=g.rows.reduce((s,r)=>s+(Number(r[2])||0),0);
+   let total2=g.rows.reduce((s,r)=>s+(Number(r[3])||0),0);
+   let clsTotal=highlight(total1,total2);
+
+   function diffText(a,b){
+     return '';
+   }
+
+   h+=`<tr class="subtotal-row">
+     <td class="subtotal-label">${g.name}</td>
+     <td><b>${g.name} 공종 소계</b><div class="small">아래 정규화 항목 합계</div></td>
+     <td class="${clsTotal[0]}"><span class="amount">${won(total1)}</span></td>
+     <td class="${clsTotal[1]}"><span class="amount">${won(total2)}</span>${diffText(total1,total2)}</td>
+     <td>세부 범위가 다르면 단순 소계 차이만으로 판정하지 말고 아래 항목을 함께 확인</td>
+   </tr>`;
+
+   g.rows.forEach(r=>{
+     let cls=highlight(r[2],r[3]);
+     h+=`<tr>
+       <td>${r[0]}</td>
+       <td><b>${r[1]}</b></td>
+       <td class="${cls[0]}"><span class="amount">${won(r[2])}</span></td>
+       <td class="${cls[1]}"><span class="amount">${won(r[3])}</span></td>
+       <td>${r[4]||''}</td>
+     </tr>`;
+   });
+ });
+
+ h+='</tbody>';
+ document.getElementById('normTable').innerHTML=h;
+}
+function renderScope(){document.getElementById('scopeGrid').innerHTML=SCOPE.map(r=>`<div class="scope"><b>${r[0]}</b><div class="small">${r[1]}<br>${r[2]}</div></div>`).join('')}
+tabs();renderTotals();renderRaw();renderNorm();renderScope();
+</script></body></html>
