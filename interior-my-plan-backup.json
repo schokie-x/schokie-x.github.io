@@ -1,0 +1,70 @@
+{
+  "schema": "interior-my-plan-v1",
+  "savedAt": "2026-09-09T14:15:37.854Z",
+  "data": {
+    "row-0": {
+      "amount": 7000000,
+      "note": ""
+    },
+    "row-3": {
+      "amount": 6000000,
+      "note": ""
+    },
+    "row-5": {
+      "amount": 4500000,
+      "note": ""
+    },
+    "row-6": {
+      "amount": 6000000,
+      "note": ""
+    },
+    "row-7": {
+      "amount": 6000000,
+      "note": ""
+    },
+    "row-8": {
+      "amount": 800000,
+      "note": ""
+    },
+    "row-9": {
+      "amount": 1800000,
+      "note": ""
+    },
+    "row-10": {
+      "amount": 5000000,
+      "note": ""
+    },
+    "row-11": {
+      "amount": 1000000,
+      "note": ""
+    },
+    "row-12": {
+      "amount": 1600000,
+      "note": ""
+    },
+    "row-13": {
+      "amount": 3500000,
+      "note": ""
+    },
+    "row-14": {
+      "amount": 12000000,
+      "note": ""
+    },
+    "row-18": {
+      "amount": 1000000,
+      "note": ""
+    },
+    "row-19": {
+      "amount": 800000,
+      "note": ""
+    },
+    "row-20": {
+      "amount": 6000000,
+      "note": ""
+    },
+    "row-21": {
+      "amount": 3000000,
+      "note": ""
+    }
+  }
+}
