@@ -460,8 +460,6 @@ function lowerLine(g,items,x0){let x=x0||140;const xs=x;items.forEach(([n,w],i)=
  if(dr){g.add(box(x-1,9,62,54.2,1.6,C.gry,90,0,1));g.add(box(x,10,60,52.2,0.8,C.ind,91.6,0,1))}
  g.add(lab(n+' '+w,x+w/2,i%2?120:105,CD+2,0.78));x+=w});
  const tot=x-xs;
- g.add(box(xs+1,CD-0.2,tot-2,0.8,1.2,0xFFD66B,1.2,0,1));g.add(box(xs,CD,tot,26,0.3,LED,0.15,0.4,1));
- g.add(lab('하부장 아래 간접조명',xs+tot/2,14,CD+16,0.6));
  g.add(box(xs,0,tot,0.6,65,0xEDEAE4,90,0,1));for(let tx=xs+80;tx<xs+tot;tx+=80)g.add(box(tx-0.2,0.6,0.4,0.2,65,TJ,90,0,1));
  g.add(lab('주방 벽 타일 800각',xs+tot/2+70,130,3,0.6))}
 const LOWER_G=[['양념망',30],['인덕션 서랍장',60],['1도어 여닫이장',65],['식세기',60],['싱크장 60+60',120]];
@@ -469,7 +467,8 @@ const LOWER_8=[['서랍장',80],['인덕션 서랍장',60],['양념망',30],['1�
 function uppersBOX(g){const hx=140,UB=155,UT=240,tot=LINE_END-hx;
  g.add(box(hx,0,tot,35,UT-UB,C.wh,UB));
  let x=hx;[45,45,49,49,49,49,49].forEach((w,i)=>{if(i>0)g.add(box(x-0.4,35,0.8,0.5,UT-UB-1,C.ws,UB+0.5));g.add(lab(''+w,x+w/2,205,40,0.5));x+=w});
- g.add(box(hx+92,35,tot-94,0.5,0.4,0xfff3c4,UB-0.4,0,1));
+ g.add(box(hx+92,27,tot-94,3,1.2,0xFFD66B,UB-1.2,0,1));g.add(box(hx+90,0.8,tot-90,34,0.3,LED,90.2,0.4,1));
+ g.add(lab('상부장 아래 간접조명',hx+tot/2+60,146,42,0.6));
  g.add(box(hx,0,90,50,5.5,0x24262A,UB-5.5));g.add(box(hx,35,90,15,0.5,0xA9ABAE,UB-0.2,0,1));
  g.add(box(hx+6,6,78,38,0.4,0x8E9093,UB-5.8,0,1));g.add(box(hx+62,50,16,0.3,1.6,0x6FA8D8,UB-3.6,0,1));
  g.add(lab('후드 90 (상부장 아래 부착형)',hx+45,138,58,0.68));
@@ -569,7 +568,7 @@ isl(O[3],300,100,C5,60,false,null,330.5,S5);winCab(O[3],true,50,true);
 isl(O[4],280,75,C6,60,true,null,330.5,S6);winCab(O[4],true,50,true);
 isl(O[5],280,75,C6,60,true,'T',null,S6);winCab(O[5],true,50,true);
 opt8(O[6]);
-const kit='마감 목공 8.25 + 냉장고장 140 + 마감 목공 8.25 · 양념망30·인덕션60·1도어장65·식세기60·싱크장120 · 후드 90(상부장 아래) · 상부장 7짝 · 벽 800각 타일 · 하부 간접조명 · 커피 코너 137×45 · ';
+const kit='마감 목공 8.25 + 냉장고장 140 + 마감 목공 8.25 · 양념망30·인덕션60·1도어장65·식세기60·싱크장120 · 후드 90(상부장 아래) · 상부장 7짝 · 벽 800각 타일 · 상부장 아래 간접조명 · 커피 코너 137×45 · ';
 const AP=' · 큐커 MC32B7388CE · 쿠쿠 CRP-LHTR1010FWM';
 const LD=' · 세탁실: 터닝도어, 바닥 −5, 단 +3, 받침대 + 세탁건조기 WD90H25AHY · 거실 ㄱ자 소파, 기둥 모서리 라운드 · 현관 중문: 천장 매립 레일, 문 높이 240 · 방문·욕실 문 모두 안으로 열림 · 욕실: 벽·바닥 600각, 젠다이(안방 20 · 공용 10), 거울 상부장 120';
 const caps=[kit+'1안 아일랜드 240×90'+LD,kit+'2안 키큰장+홈바'+AP+LD,kit+'4-2안'+LD,kit+'5안 아일랜드 300×100'+AP+LD,kit+'6안(기본) 아일랜드 280×75 = 서랍60×3 + 큐커장60 + 밥솥장40'+AP+LD,kit+'7안 T자 식탁'+AP+LD,
