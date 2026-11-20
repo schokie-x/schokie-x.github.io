@@ -344,19 +344,18 @@ function toilet(xw,zc,dir,hung){const L=30,x0=dir>0?xw:xw-L,y0=hung?12:0,h=hung?
  a(box(dir>0?xw:xw-5,zc-16,5,32,1.2,0xE4E7E9,y0+h+2.2,0,1));
  if(hung){a(box(dir>0?xw:xw-0.7,zc-12,0.7,24,15,CHR,86,0,1));a(box(dir>0?xw+0.7:xw-1,zc-10.5,0.3,10,12,0xDADDE0,87.5,0,1));a(box(dir>0?xw+0.7:xw-1,zc+0.5,0.3,10,12,0xDADDE0,87.5,0,1))}
  else{const tx=dir>0?xw:xw-18;a(box(tx,zc-19,18,38,34,FX,h+2));a(box(dir>0?xw:xw-18.6,zc-19.6,18.6,39.2,2.2,WHT,h+36,0,1));a(cyl(1.7,1.2,CHR,tx+9,h+38.8,zc))}}
-function vanity(xw,zc,dir,xwall,zt){const Dp=46,x0=dir>0?xw:xw-Dp;
+function vanity(xw,zc,dir,xwall,zt,mz,mw){const Dp=46,x0=dir>0?xw:xw-Dp;
  a(box(x0,zc-30,Dp,60,32,C.wh,48));a(box(dir>0?xw:xw-Dp-1,zc-31,Dp+1,62,3,WHT,80));
  a(box(dir>0?xw+Dp:xw-Dp-0.4,zc-0.4,0.4,0.8,30,C.ws,49,0,1));a(box(dir>0?xw+Dp:xw-Dp-0.5,zc-14,0.5,1,8,CHR,68,0,1));a(box(dir>0?xw+Dp:xw-Dp-0.5,zc+13,0.5,1,8,CHR,68,0,1));
  a(ell(16.5,20.5,0.6,0xF1F4F5,xw+dir*27,83.2,zc));a(ell(14,18,0.7,0xD5E0E5,xw+dir*27,83.5,zc));a(ell(1.8,1.8,0.5,0x8E9093,xw+dir*27,84,zc));
  a(cyl(1.5,14,CHR,xw+dir*6,90,zc));a(box(dir>0?xw+5:xw-17,zc-1.1,12,2.2,1.8,CHR,95.5,0,1));a(box(dir>0?xw+4:xw-6.5,zc+3,2.5,5,1.2,CHR,96.5,0,1));
- const mz=zc-30,zd=Math.abs(xw-xwall),md=Math.max(12,zd),mf=dir>0?xwall+md:xwall-md-0.6;
- a(box(dir>0?xwall:xwall-md,mz,md,120,70,C.wh,125));
- a(box(mf,mz+1,0.6,58.5,68,0xC9D6DC,126,0,1));a(box(mf,mz+60.5,0.6,58.5,68,0xC9D6DC,126,0,1));
- a(box(dir>0?xwall+md:xwall-md-0.7,mz+59.6,0.7,0.8,68,0x9AA3A8,126,0,1));
- a(box(dir>0?xwall+md-4:xwall-md+1,mz+2,3,116,1.2,0xFFD66B,123.8,0,1));
- a(box(dir>0?xwall+0.7:xwall-1.1,mz,0.4,120,125-zt,LED,zt,0.4,1));
- a(box(dir>0?xwall:xwall-zd,mz,zd,120,0.3,LED,zt+0.2,0.4,1));
- a(lab('거울 상부장 120×70 · 깊이 '+md+' · 하단 T5 간접조명',dir>0?xwall+10:xwall-10,205,mz+60,0.6))}
+ const zd=Math.abs(xw-xwall),md=15,mf=dir>0?xwall+md:xwall-md-0.6,nd=3,dwm=mw/nd;
+ a(box(dir>0?xwall:xwall-md,mz,md,mw,70,C.wh,125));
+ for(let i=0;i<nd;i++)a(box(mf,mz+dwm*i+1,0.6,dwm-2,68,0xC9D6DC,126,0,1));
+ a(box(dir>0?xwall+md-4:xwall-md+1,mz+2,3,mw-4,1.2,0xFFD66B,123.8,0,1));
+ a(box(dir>0?xwall+0.7:xwall-1.1,mz,0.4,mw,125-zt,LED,zt,0.4,1));
+ a(box(dir>0?xwall:xwall-zd,mz,zd,mw,0.3,LED,zt+0.2,0.4,1));
+ a(lab('거울 상부장 '+mw+'×70 · 깊이 '+md+' · 하단 T5 간접조명',dir>0?xwall+10:xwall-10,205,mz+mw/2,0.6))}
 function tub(x0,z0,fx){a(box(x0,z0,150,5,55,FX,0));a(box(x0,z0+65,150,5,55,FX,0));a(box(x0,z0+5,6,60,55,FX,0));a(box(x0+144,z0+5,6,60,55,FX,0));
  a(box(x0+6,z0+5,138,60,13,0xEEF2F3,0,0,1));a(box(x0+6,z0+5,138,60,0.4,0xDCE7EB,13,0,1));
  a(ell(2.2,2.2,0.5,0x8E9093,fx>0?x0+128:x0+22,13.6,z0+35));
@@ -403,7 +402,7 @@ a(box(XR-20,216,20,151.5,110,TF,0,0,1));
 a(box(XR-20.2,216,0.2,151.5,0.3,TJ,59.85,0,1));a(box(XR-20.2,216,0.2,151.5,0.3,TJ,109.8,0,1));a(box(XR-20.2,215.85,20.2,0.3,110,0x8a7660,0,0,1));
 a(lab('젠다이 폭 20 · 높이 110 (욕조 앞까지)',XR-10,128,330,0.6));
 toilet(XR-20,338,-1,true);a(lab('벽부형 양변기',XR-50,62,338,0.6));
-vanity(XR-20,264,-1,XR,110);a(lab('세면대 + 하부장 60',XR-45,108,250,0.6));
+vanity(XR-20,264,-1,XR,110,216,151.5);a(lab('세면대 + 하부장 60',XR-45,108,250,0.6));
 a(lab('안방욕실 225×160 · 벽·바닥 600각',-250,150,250,0.9));
 a(box(XB,43,160,90.5,CH,PSC,0,0.9));a(lab('PS (배관 샤프트)',-226,130,88,0.7));
 w2(-339.5,20,XR+339.5,23);
@@ -442,7 +441,7 @@ a(box(XB+10,-457,0.2,151.5,0.3,TJ,59.85,0,1));a(box(XB+10,-457,0.2,151.5,0.3,TJ,
 a(lab('젠다이 폭 10 · 높이 100 (샤워실 앞까지)',XB+5,118,-375,0.6));
 a(box(XB,-465,22,8,CH,TF,0));WJ.forEach(y=>a(box(XB,-465.2,22.2,8.4,0.3,TJ,y-0.15,0,1)));a(lab('튀어나온 벽 22×8',XB+11,228,-461,0.55));
 toilet(XB+10,-338,1,false);a(lab('양변기',XB+45,92,-338,0.6));
-vanity(XB+10,-415,1,XB,100);a(lab('세면대 + 하부장 60',XB+40,108,-430,0.6));
+vanity(XB+10,-415,1,XB,100,-457,151.5);a(lab('세면대 + 하부장 60',XB+40,108,-430,0.6));
 a(box(XB+22,-461,XR-XB-22,1.5,200,0x9fd0e0,0,0.3));a(box(XB+22,-461.5,XR-XB-22,2.5,2,SF,0,0,1));a(box(XB+22,-461.5,XR-XB-22,2.5,2,SF,198,0,1));
 a(box(XB+84,-462,1.2,3,196,SF,2,0,1));a(box(XB+90,-463.5,1.5,1.5,30,CHR,90,0,1));
 a(cyl(1.2,110,CHR,XB+4,150,-512));a(box(XB+2,-526,20,26,2,CHR,206,0,1));a(box(XB+1,-518,6,12,5,CHR,98,0,1));a(cyl(2,5,CHR,XB+9,100.5,-516,true));
@@ -571,7 +570,7 @@ isl(O[5],280,75,C6,60,true,'T',null,S6);winCab(O[5],true,50,true);
 opt8(O[6]);
 const kit='마감 목공 8.25 + 냉장고장 140 + 마감 목공 8.25 · 양념망30·인덕션60·1도어장65·식세기60·싱크장120 · 후드 90(상부장 아래) · 상부장 7짝 · 벽 800각 타일 · 상부장 아래 간접조명 · 커피 코너 137×45 · ';
 const AP=' · 큐커 MC32B7388CE · 쿠쿠 CRP-LHTR1010FWM';
-const LD=' · 세탁실: 터닝도어, 바닥 −5, 단 +3, 받침대 + 세탁건조기 WD90H25AHY · 거실 ㄱ자 소파, 기둥 모서리 라운드 · 현관 중문: 천장 매립 레일, 문 높이 240 · 방문·욕실 문 모두 안으로 열림 · 욕실: 벽·바닥 600각, 젠다이(안방 20 · 공용 10), 거울 상부장 120';
+const LD=' · 세탁실: 터닝도어, 바닥 −5, 단 +3, 받침대 + 세탁건조기 WD90H25AHY · 거실 ㄱ자 소파, 기둥 모서리 라운드 · 현관 중문: 천장 매립 레일, 문 높이 240 · 방문·욕실 문 모두 안으로 열림 · 욕실: 벽·바닥 600각, 젠다이(안방 20 · 공용 10), 거울 상부장 151.5(젠다이 길이)';
 const caps=[kit+'1안 아일랜드 240×90'+LD,kit+'2안 키큰장+홈바'+AP+LD,kit+'4-2안'+LD,kit+'5안 아일랜드 300×100'+AP+LD,kit+'6안(기본) 아일랜드 280×75 = 서랍60×3 + 큐커장60 + 밥솥장40'+AP+LD,kit+'7안 T자 식탁'+AP+LD,
  '8안: 키큰장60(큐커+밥솥) → 서랍장80 → 인덕션60 → 양념망30 → 1도어장65 → 식세기60 → 싱크장120 · 세탁실 벽: 옆 장10 + 냉장고장140 + 옆 장10'+AP+LD];
 let az=0.5,ev=0.45;const PY=96;const ctr=new THREE.Vector3(MX-200,PY,-150);let rad=1250,rad0=1250,cur=4;
