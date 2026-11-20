@@ -58,7 +58,7 @@ sc.add(new THREE.AmbientLight(0xffffff,0.74));const dl=new THREE.DirectionalLigh
 const dl2=new THREE.DirectionalLight(0xffffff,0.25);dl2.position.set(-200,300,-400);sc.add(dl2);
 const MX=590;const ROOT=new THREE.Group();ROOT.scale.x=-1;ROOT.position.x=MX;sc.add(ROOT);
 const CH=240,LW=420,DUCT=LW+55,EW=DUCT+100,CD=73,IZ=CD+100,SEAM=10+37,LINE_END=DUCT,WT=8.5,CW=136.5,CWT=16.5;
-const C={film:0xCDAE84,mar:0xF3F1EC,wh:0xF5F3EE,wall:0xF1EEE8,top:0xF8F6F1,ind:0xF6F5F2,lau:0xDCD8D0,h:0x9a968e,seam:0x8E7350,ws:0xC9C3B8,tb:0xF7F6F3,tl:0xE2DFD8,ch:0xBDB6AA,hd:0xF7F6F3,sb:0xF1F0EC,gap:0xB9B5AE,gry:0x6F7073};
+const C={film:0xCDAE84,mar:0xF3F1EC,wh:0xF5F3EE,wall:0xF3EEE3,top:0xF8F6F1,ind:0xF6F5F2,lau:0xDCD8D0,h:0x9a968e,seam:0x8E7350,ws:0xC9C3B8,tb:0xF7F6F3,tl:0xE2DFD8,ch:0xBDB6AA,hd:0xF7F6F3,sb:0xF1F0EC,gap:0xB9B5AE,gry:0x6F7073};
 function woodTex(){const cv=document.createElement('canvas');cv.width=256;cv.height=512;const g=cv.getContext('2d');g.fillStyle='#CDAE84';g.fillRect(0,0,256,512);
 for(let i=0;i<140;i++){const x=Math.random()*256,w=0.6+Math.random()*1.8,a=0.05+Math.random()*0.12;g.strokeStyle=`rgba(${Math.random()<0.5?150:225},${Math.random()<0.5?115:195},${Math.random()<0.5?75:150},${a})`;g.lineWidth=w;g.beginPath();g.moveTo(x,0);for(let y=0;y<=512;y+=64)g.lineTo(x+Math.sin(y/90+i)*3,y);g.stroke()}
 const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t}
@@ -71,12 +71,13 @@ function indTex(){const cv=document.createElement('canvas');cv.width=256;cv.heig
  g.beginPath();g.arc(186,112,56,0,Math.PI*2);g.stroke();g.beginPath();g.arc(186,112,36,0,Math.PI*2);g.stroke();
  g.fillStyle='rgba(140,140,142,0.8)';for(let i=0;i<7;i++)g.fillRect(78+i*14,210,8,5);const t=new THREE.CanvasTexture(cv);t.flipY=false;return t}
 const WM=new THREE.MeshLambertMaterial({map:woodTex()}),MM=new THREE.MeshPhongMaterial({map:marbleTex(),shininess:60,specular:0x333333}),SBM=new THREE.MeshLambertMaterial({map:cottaTex()}),HDM=new THREE.MeshPhongMaterial({color:0xF7F6F3,shininess:40,specular:0x222222}),IDM=new THREE.MeshPhongMaterial({map:indTex(),shininess:30,specular:0x222222});
+function wallMat(op){const k=new THREE.Color(C.wall);return new THREE.MeshLambertMaterial({color:k.clone().multiplyScalar(0.2),emissive:k.clone().multiplyScalar(0.8),transparent:!!op,opacity:op||1})}
 function box(x,z,w,d,h,c,y0,op,noEdge){if((c===C.wall||c===C.lau)&&op&&op<0.9)op=0.9;
- const mat=(c===C.film&&!op)?WM:(c===C.mar?MM:(c===C.sb?SBM:(c===C.hd?HDM:(c===C.ind?IDM:(c===C.tb?new THREE.MeshPhongMaterial({color:c,shininess:80,specular:0x444444}):new THREE.MeshLambertMaterial({color:c,transparent:!!op,opacity:op||1}))))));const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x+w/2,(y0||0)+h/2,z+d/2);if(!noEdge)m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0x8a7660})));return m}
+ const mat=c===C.wall?wallMat(op):(c===C.film&&!op)?WM:(c===C.mar?MM:(c===C.sb?SBM:(c===C.hd?HDM:(c===C.ind?IDM:(c===C.tb?new THREE.MeshPhongMaterial({color:c,shininess:80,specular:0x444444}):new THREE.MeshLambertMaterial({color:c,transparent:!!op,opacity:op||1}))))));const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x+w/2,(y0||0)+h/2,z+d/2);if(!noEdge)m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0x8a7660})));return m}
 function rbox(cx,cy,cz,w,h,d,c,rx,rz){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:c}));m.position.set(cx,cy,cz);m.rotation.set(rx||0,0,rz||0);m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0xA89F90})));return m}
 function rprism(x0,z0,w,d,h,r,c){const s=new THREE.Shape(),y0=-(z0+d),y1=-z0,x1=x0+w;
  s.moveTo(x0+r,y0);s.lineTo(x1-r,y0);s.quadraticCurveTo(x1,y0,x1,y0+r);s.lineTo(x1,y1-r);s.quadraticCurveTo(x1,y1,x1-r,y1);s.lineTo(x0+r,y1);s.quadraticCurveTo(x0,y1,x0,y1-r);s.lineTo(x0,y0+r);s.quadraticCurveTo(x0,y0,x0+r,y0);
- const g=new THREE.ExtrudeGeometry(s,{depth:h,bevelEnabled:false,curveSegments:12});const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:c}));m.rotation.x=-Math.PI/2;
+ const g=new THREE.ExtrudeGeometry(s,{depth:h,bevelEnabled:false,curveSegments:12});const m=new THREE.Mesh(g,c===C.wall?wallMat():new THREE.MeshLambertMaterial({color:c}));m.rotation.x=-Math.PI/2;
  m.add(new THREE.LineSegments(new THREE.EdgesGeometry(g,40),new THREE.LineBasicMaterial({color:0x8a7660})));return m}
 function arcF(cx,cz,r,ts){const m=new THREE.Mesh(new THREE.CircleGeometry(r,32,ts,Math.PI/2),new THREE.MeshBasicMaterial({color:0x4F86A8,transparent:true,opacity:0.22,side:THREE.DoubleSide}));m.rotation.x=-Math.PI/2;m.position.set(cx,0.6,cz);return m}
 const CATS=[['st','구조 (방·벽·창·문)','#2F5D8A'],['fu','가구','#8A5A2B'],['kc','주방·수납장','#2E7D4F'],['ap','가전','#6B3FA0'],['ut','바닥·설비','#0F7B7B'],['gp','간격·치수','#C0452B']];
@@ -222,13 +223,13 @@ function rdoor(z0,hi,t){const w=102,xm=-CWT/2,hz=hi?z0+8:z0+w-10,hgz=hi?z0+w:z0;
  a(box(xm-2,z0+2.5,4,w-5,209,C.film));a(box(xm-3.4,hz,1.4,1.5,30,C.h,95,0,1));a(box(xm+2,hz,1.4,1.5,30,C.h,95,0,1));
  a(arcF(0,hgz,w,hi?0:Math.PI*1.5));a(box(0,hi?hgz-4:hgz,w,4,209,C.film,0,0.3,1));
  a(lab(t,-30,225,z0+51,0.72))}
-a(box(-CWT,RZ0-WT,50+CWT,50+WT,CH,0xE8E4DC,0,0.95));
+a(box(-CWT,RZ0-WT,50+CWT,50+WT,CH,C.wall,0,0.95));
 const DZ0=RZ0+50;
 a(box(-CWT,DZ0+102,CWT,-WT-(DZ0+102),CH,C.wall,0,0.9));
 a(box(-CWT,DZ0,CWT,102,CH-210,C.wall,210,0.9));rdoor(DZ0,false,'중간방 문 102 (안으로 · 손잡이 왼쪽)');
 a(lab('중간방 450×309.5',225,120,RZ0+150,0.95));a(lab('기둥 50',20,200,RZ0+25,0.7));a(lab('벽 150',-30,120,DZ0+102+75,0.75));
 const R2T=RZ2+309.5;
-a(box(-CWT,R2T-42,42+CWT,42+WT,CH,0xE8E4DC,0,0.95));
+a(box(-CWT,R2T-42,42+CWT,42+WT,CH,C.wall,0,0.95));
 const DZ2=R2T-42-102;
 a(box(-CWT,RZ2,CWT,DZ2-RZ2,CH,C.wall,0,0.9));
 a(box(-CWT,DZ2,CWT,102,CH-210,C.wall,210,0.9));rdoor(DZ2,true,'아이방 문 102 (안으로 · 손잡이 오른쪽)');
@@ -326,7 +327,7 @@ a(box(WWX,WBZ,68.6,LOUT-WBZ,0.6,0xC0583A,UP+0.2,0.35,1));a(lab('뒤 배관 공�
 a(box(LI,WFZ-0.3,WG,0.6,0.5,0xC0583A,UP+0.3,0,1));a(lab('앞면 = 벽에서 '+FRONT,LI+40,UP+4,WFZ-5,0.55));
 const UB2=165;a(box(LI,LOUT-35,WG,35,CH-UB2,C.wh,UB2,0.6));a(lab('상부장 92×35×75 (165~240)',LI+46,232,LB-28,0.58));
 a(box(SHX,LOUT-SHD,EW-SHX,SHD,CH-UP,0xD2CEC6,UP,0.9));a(lab('선홈통 (배관)',SHX+24,130,LB-38,0.6));
-a(rprism(0,320,60,60,CH,9,0xECE8E0));a(lab('내력 기둥 60×60 · 모서리 라운드 R9',30,205,350,0.85));
+a(rprism(0,320,60,60,CH,9,C.wall));a(lab('내력 기둥 60×60 · 모서리 라운드 R9',30,205,350,0.85));
 const XR=-146.5,XB=-306.5,XF=-536.5,XH=-331,WO=0.9,FX=0xFBFBF9,PSC=0xD8D4CC,GL2=0x8fc3dc,SF=0xB8BEC4,TJ=0xA9A49A,TF=0xE9E5DD,LED=0xFFE9A8,CHR=0xC4C8CC,WHT=0xFFFFFF;
 const w2=(x,z,w,d,h,y0)=>a(box(x,z,w,d,h||CH,C.wall,y0||0,WO));
 const WJ=[60,120,180],XL=[XB+60,XB+120],ZA=[307.5,247.5,187.5],ZG=[-365.5,-425.5,-485.5,-545.5];
