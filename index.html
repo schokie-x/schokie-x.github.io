@@ -501,10 +501,10 @@ function tallQ(g,z,w){
 function tallS(g,z,w){g.add(box(X0,z,D,w,CH,K));[86,175].forEach(y=>g.add(box(X0-0.4,z+1,0.4,w-2,0.8,C.ws,y)));
  g.add(lab('키큰장 '+w+'×55',X0-10,215,z+w/2,0.8))}
 const CDP=45;
-function winCab(g,withNes,dep,coffeeOnly){dep=CDP;const WX=EW-dep;cab(g,WX,CD,dep,137);g.add(box(WX-0.4,CD+70,0.4,67,0.8,C.seam,45));
+function winCab(g,withNes,dep,coffeeOnly){dep=CDP;const WX=EW-dep;cab(g,WX,CD,dep,137);for(let i=0;i<3;i++){const dz=137/3;if(i>0)g.add(box(WX-0.4,CD+dz*i-0.4,0.4,0.8,78,C.seam,6));g.add(box(WX-0.9,CD+dz*i+(i==1?4:(i==0?dz-6:4)),0.9,1.4,14,0x8c8883,64,0,1))}
  if(!coffeeOnly){cooker(g,WX-3,CD+75,60,90)}
  if(withNes){nes(g,WX,CD+45,90);nes(g,WX,CD+70,90)}
- g.add(lab('커피 코너 137×'+dep,WX+24,118,CD+40,0.8))}
+ g.add(lab('커피 코너 137×'+dep+' · 개폐장 3짝',WX+24,118,CD+40,0.8))}
 const TW=160,TD=75,NI=0xE4E0D8,TBL='세라믹 식탁 160×75';
 function isl(g,IW,ID,cols,gap,noBack,tmode,TZ,special){IW=IW||240;ID=ID||90;gap=gap||50;TZ=TZ||320.5;special=special||{};const IX=LW-gap-IW;
  g.add(box(IX,IZ,IW,ID,4,C.top,86));
