@@ -72,7 +72,7 @@ function indTex(){const cv=document.createElement('canvas');cv.width=256;cv.heig
  g.fillStyle='rgba(140,140,142,0.8)';for(let i=0;i<7;i++)g.fillRect(78+i*14,210,8,5);const t=new THREE.CanvasTexture(cv);t.flipY=false;return t}
 const WM=new THREE.MeshLambertMaterial({map:woodTex()}),MM=new THREE.MeshPhongMaterial({map:marbleTex(),shininess:60,specular:0x333333}),SBM=new THREE.MeshLambertMaterial({map:cottaTex()}),HDM=new THREE.MeshPhongMaterial({color:0xF7F6F3,shininess:40,specular:0x222222}),IDM=new THREE.MeshPhongMaterial({map:indTex(),shininess:30,specular:0x222222});
 function wallMat(op){const k=new THREE.Color(C.wall);return new THREE.MeshLambertMaterial({color:k.clone().multiplyScalar(0.2),emissive:k.clone().multiplyScalar(0.8),transparent:!!op,opacity:op||1})}
-function box(x,z,w,d,h,c,y0,op,noEdge){if((c===C.wall||c===C.lau)&&op&&op<0.9)op=0.9;
+function box(x,z,w,d,h,c,y0,op,noEdge){if(c===C.lau)c=C.wall;if(c===C.wall)op=0;
  const mat=c===C.wall?wallMat(op):(c===C.film&&!op)?WM:(c===C.mar?MM:(c===C.sb?SBM:(c===C.hd?HDM:(c===C.ind?IDM:(c===C.tb?new THREE.MeshPhongMaterial({color:c,shininess:80,specular:0x444444}):new THREE.MeshLambertMaterial({color:c,transparent:!!op,opacity:op||1}))))));const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x+w/2,(y0||0)+h/2,z+d/2);if(!noEdge)m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0x8a7660})));return m}
 function rbox(cx,cy,cz,w,h,d,c,rx,rz){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:c}));m.position.set(cx,cy,cz);m.rotation.set(rx||0,0,rz||0);m.add(new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry),new THREE.LineBasicMaterial({color:0xA89F90})));return m}
 function rprism(x0,z0,w,d,h,r,c){const s=new THREE.Shape(),y0=-(z0+d),y1=-z0,x1=x0+w;
@@ -267,7 +267,7 @@ f(box(88.5,72.3,1.2,0.6,70,0x8c8883,120,0,1));f(box(92.3,72.3,1.2,0.6,70,0x8c888
 f(box(60,72.3,30,0.6,1,0x8c8883,104,0,1));f(box(96,72.3,30,0.6,1,0x8c8883,104,0,1));
 f(lab('냉장고장 140',70,252,75,0.9));return g}
 const FW=CWT/2;
-function endFill(g){g.add(box(-CWT,0,FW,CD,CH,C.wh));g.add(box(140-FW,0,FW,CD,CH,C.wh));
+function endFill(g){g.add(box(-CWT,0,FW,CD,CH,C.wall));g.add(box(140-FW,0,FW,CD,CH,C.wh));
  g.add(box(-CWT-0.3,-WT,0.6,CD+WT,0.5,0xC0583A,0.3,0,1));
  g.add(lab('마감 목공 '+FW,-CWT+FW/2,170,CD+6,0.6));g.add(lab('마감 목공 '+FW,140-FW/2,170,CD+6,0.6))}
 a(box(DUCT,0,EW-DUCT,CD,CH,C.wall));a(lab('덕트 기둥',DUCT+50,200,75,0.8));
