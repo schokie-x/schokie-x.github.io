@@ -58,7 +58,7 @@ sc.add(new THREE.AmbientLight(0xffffff,0.74));const dl=new THREE.DirectionalLigh
 const dl2=new THREE.DirectionalLight(0xffffff,0.25);dl2.position.set(-200,300,-400);sc.add(dl2);
 const MX=590;const ROOT=new THREE.Group();ROOT.scale.x=-1;ROOT.position.x=MX;sc.add(ROOT);
 const CH=240,LW=420,DUCT=LW+55,EW=DUCT+100,CD=73,IZ=CD+100,SEAM=10+37,LINE_END=DUCT,WT=8.5,CW=136.5,CWT=16.5;
-const C={film:0xCDAE84,mar:0xF3F1EC,wh:0xF5F3EE,wall:0xF2ECDF,top:0xF8F6F1,ind:0xF6F5F2,lau:0xDCD8D0,h:0x9a968e,seam:0x8E7350,ws:0xC9C3B8,tb:0xF7F6F3,tl:0xE2DFD8,ch:0xBDB6AA,hd:0xF7F6F3,sb:0xF1F0EC,gap:0xB9B5AE,gry:0x6F7073};
+const C={film:0xCDAE84,mar:0xF3F1EC,wh:0xF5F3EE,wall:0xF2ECDF,top:0xF1EBDE,up:0xDBD5CA,pil:0xE9E1D2,ind:0xF6F5F2,lau:0xDCD8D0,h:0x9a968e,seam:0x8E7350,ws:0xC9C3B8,tb:0xF7F6F3,tl:0xE2DFD8,ch:0xBDB6AA,hd:0xF7F6F3,sb:0xF1F0EC,gap:0xB9B5AE,gry:0x6F7073};
 function woodTex(){const cv=document.createElement('canvas');cv.width=256;cv.height=512;const g=cv.getContext('2d');g.fillStyle='#CDAE84';g.fillRect(0,0,256,512);
 for(let i=0;i<140;i++){const x=Math.random()*256,w=0.6+Math.random()*1.8,a=0.05+Math.random()*0.12;g.strokeStyle=`rgba(${Math.random()<0.5?150:225},${Math.random()<0.5?115:195},${Math.random()<0.5?75:150},${a})`;g.lineWidth=w;g.beginPath();g.moveTo(x,0);for(let y=0;y<=512;y+=64)g.lineTo(x+Math.sin(y/90+i)*3,y);g.stroke()}
 const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t}
@@ -327,7 +327,7 @@ a(box(WWX,WBZ,68.6,LOUT-WBZ,0.6,0xC0583A,UP+0.2,0.35,1));a(lab('뒤 배관 공�
 a(box(LI,WFZ-0.3,WG,0.6,0.5,0xC0583A,UP+0.3,0,1));a(lab('앞면 = 벽에서 '+FRONT,LI+40,UP+4,WFZ-5,0.55));
 const UB2=165;a(box(LI,LOUT-35,WG,35,CH-UB2,C.wh,UB2,0.6));a(lab('상부장 92×35×75 (165~240)',LI+46,232,LB-28,0.58));
 a(box(SHX,LOUT-SHD,EW-SHX,SHD,CH-UP,0xD2CEC6,UP,0.9));a(lab('선홈통 (배관)',SHX+24,130,LB-38,0.6));
-a(rprism(0,320,60,60,CH,9,C.wall));a(lab('내력 기둥 60×60 · 모서리 라운드 R9',30,205,350,0.85));
+a(rprism(0,320,60,60,CH,9,C.pil));a(lab('내력 기둥 60×60 · 라운드 R9 · 필름 PX450 발렌무디크림',30,205,350,0.85));
 const XR=-146.5,XB=-306.5,XF=-536.5,XH=-331,WO=0.9,FX=0xFBFBF9,PSC=0xD8D4CC,GL2=0x8fc3dc,SF=0xB8BEC4,TJ=0xA9A49A,TF=0xE9E5DD,LED=0xFFE9A8,CHR=0xC4C8CC,WHT=0xFFFFFF;
 const w2=(x,z,w,d,h,y0)=>a(box(x,z,w,d,h||CH,C.wall,y0||0,WO));
 const WJ=[60,120,180],XL=[XB+60,XB+120],ZA=[307.5,247.5,187.5],ZG=[-365.5,-425.5,-485.5,-545.5];
@@ -463,17 +463,17 @@ function lowerLine(g,items,x0){let x=x0||140;const xs=x;items.forEach(([n,w],i)=
  const tot=x-xs;
  g.add(box(xs,0,tot,0.6,65,0xEDEAE4,90,0,1));for(let tx=xs+80;tx<xs+tot;tx+=80)g.add(box(tx-0.2,0.6,0.4,0.2,65,TJ,90,0,1));
  g.add(lab('주방 벽 타일 800각',xs+tot/2+70,130,3,0.6))}
-const LOWER_G=[['양념망',30],['인덕션 서랍장',60],['1도어 여닫이장',65],['식세기',60],['싱크장 60+60',120]];
-const LOWER_8=[['서랍장',80],['인덕션 서랍장',60],['양념망',30],['1도어 여닫이장',65],['식세기',60],['싱크장 60+60',120]];
+const LOWER_G=[['양념망',30],['인덕션 서랍장',60],['1도어 여닫이장',65],['식세기',60],['싱크장 60+60 · 깜뽀르떼 860',120]];
+const LOWER_8=[['서랍장',80],['인덕션 서랍장',60],['양념망',30],['1도어 여닫이장',65],['식세기',60],['싱크장 60+60 · 깜뽀르떼 860',120]];
 function uppersBOX(g){const hx=140,UB=155,UT=240,tot=LINE_END-hx;
- g.add(box(hx,0,tot,35,UT-UB,C.wh,UB));
+ g.add(box(hx,0,tot,35,UT-UB,C.up,UB));
  let x=hx;[45,45,49,49,49,49,49].forEach((w,i)=>{if(i>0)g.add(box(x-0.4,35,0.8,0.5,UT-UB-1,C.ws,UB+0.5));g.add(lab(''+w,x+w/2,205,40,0.5));x+=w});
  g.add(box(hx+92,27,tot-94,3,1.2,0xFFD66B,UB-1.2,0,1));g.add(box(hx+90,0.8,tot-90,34,0.3,LED,90.2,0.4,1));
  g.add(lab('상부장 아래 간접조명',hx+tot/2+60,146,42,0.6));
  g.add(box(hx,0,90,50,5.5,0x24262A,UB-5.5));g.add(box(hx,35,90,15,0.5,0xA9ABAE,UB-0.2,0,1));
  g.add(box(hx+6,6,78,38,0.4,0x8E9093,UB-5.8,0,1));g.add(box(hx+62,50,16,0.3,1.6,0x6FA8D8,UB-3.6,0,1));
  g.add(lab('후드 90 (상부장 아래 부착형)',hx+45,138,58,0.68));
- g.add(lab('상부장 7짝 (45×2 + 49×5)',hx+tot/2+30,172,40,0.68))}
+ g.add(lab('상부장 7짝 (45×2 + 49×5) · PS156 포그그레이지',hx+tot/2+30,172,40,0.68))}
 const cab=(g,x,z,w,d)=>{g.add(box(x,z,w,d,86,C.film));g.add(box(x,z,w,d,4,C.top,86))};
 function table(g,x,z,w,d,t){g.add(box(x,z,w,d,3,C.tb,72));[[x+5,z+5],[x+w-9,z+5],[x+5,z+d-9],[x+w-9,z+d-9]].forEach(([lx,lz])=>g.add(box(lx,lz,4,4,72,C.tl,0)));g.add(lab(t,x+w/2,95,z+d/2,0.85))}
 function chair(g,x,z,side){g.add(box(x,z,45,45,4,C.ch,44));
@@ -555,7 +555,7 @@ function opt8(g){
  tall8(g);
  lowerLine(g,LOWER_8,60);
  uppersBOX(g);
- g.add(box(60,0,80,35,85,C.wh,155));g.add(box(99.6,35,0.8,0.5,84,C.ws,155.5));g.add(box(62,35,76,0.5,0.4,0xfff3c4,154.6,0,1));
+ g.add(box(60,0,80,35,85,C.up,155));g.add(box(99.6,35,0.8,0.5,84,C.ws,155.5));g.add(box(62,35,76,0.5,0.4,0xfff3c4,154.6,0,1));
  g.add(lab('상부장 확장 40+40',100,222,40,0.6));
  const f=fridge();f.rotation.y=-Math.PI/2;f.position.set(LW,0,220.5);g.add(f);
  g.add(box(LW-CD,210.5,CD,10,CH,K));g.add(box(LW-CD,360.5,CD,10,CH,K));
@@ -584,7 +584,7 @@ function draw(){piv.position.set(ctr.x,ctr.y,ctr.z);const k=Math.max(0.25,rad/90
 const HID={};
 {const row=document.getElementById('lgr');CATS.forEach(([id,name,col])=>{const b=document.createElement('span');b.className='lg';b.textContent=name;b.style.color=col;b.style.borderColor=col;
  b.onclick=()=>{HID[id]=!HID[id];b.classList.toggle('off',HID[id]);LABS.forEach(s=>{if(s.userData.cat==id)s.visible=!HID[id]});draw()};row.appendChild(b)})}
-function cap(){document.getElementById('cap').textContent=caps[cur]+' · 벽지 디아망 PR002-12 회벽 크림화이트 · 마루 393×797 · 좌우 반전 · 단위 cm · 회전축 높이 '+Math.round(ctr.y)+' ('+Math.round(ctr.y/2.4)+'%) · 줌 '+Math.round(rad0/rad*100)+'%'}
+function cap(){document.getElementById('cap').textContent=caps[cur]+' · 벽지 디아망 PR002-12 회벽 크림화이트 · 방문 영림 216(PW974) 오크 · 상부장 영림 PS156 포그그레이지 · 기둥 필름 영림 PX450 발렌무디크림 · 상판 LX 오로라 리넨크림 · 마루 구정 마블러스 리브 모로칸 크림 393×797 · 좌우 반전 · 단위 cm · 회전축 높이 '+Math.round(ctr.y)+' ('+Math.round(ctr.y/2.4)+'%) · 줌 '+Math.round(rad0/rad*100)+'%'}
 function show(i){cur=i;O.forEach((g,j)=>g.visible=j==i);for(let j=0;j<N;j++)document.getElementById('b'+j).classList.toggle('on',j==i);cap();draw()}
 for(let j=0;j<N;j++)document.getElementById('b'+j).onclick=()=>show(j);
 const VW={va:[MX-20,PY,110,2350,0.55,0.95],vl:[MX-120,PY,640,900,0.25,0.85],vm:[MX-240,PY,180,900,0.5,0.7],vs:[MX-505,PY,300,440,Math.PI-0.45,0.85],vr:[MX-225,PY,RZ0+150,720,2.4,0.9],vk:[MX-225,PY,RZ2+150,720,2.4,0.9],vc:[MX+136,PY,-93,290,-0.37,0.3],
