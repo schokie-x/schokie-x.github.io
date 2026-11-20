@@ -58,7 +58,7 @@ sc.add(new THREE.AmbientLight(0xffffff,0.74));const dl=new THREE.DirectionalLigh
 const dl2=new THREE.DirectionalLight(0xffffff,0.25);dl2.position.set(-200,300,-400);sc.add(dl2);
 const MX=590;const ROOT=new THREE.Group();ROOT.scale.x=-1;ROOT.position.x=MX;sc.add(ROOT);
 const CH=240,LW=420,DUCT=LW+55,EW=DUCT+100,CD=73,IZ=CD+100,SEAM=10+37,LINE_END=DUCT,WT=8.5,CW=136.5,CWT=16.5;
-const C={film:0xCDAE84,mar:0xF3F1EC,wh:0xF5F3EE,wall:0xF8F5EE,top:0xF1EBDE,up:0xDBD5CA,pil:0xE9E1D2,ind:0xF6F5F2,lau:0xDCD8D0,h:0x9a968e,seam:0x8E7350,ws:0xC9C3B8,tb:0xF7F6F3,tl:0xE2DFD8,ch:0xBDB6AA,hd:0xF7F6F3,sb:0xF1F0EC,gap:0xB9B5AE,gry:0x6F7073};
+const C={film:0xCDAE84,mar:0xF3F1EC,wh:0xF5F3EE,wall:0xFAF9F5,top:0xF1EBDE,up:0xDBD5CA,pil:0xE9E1D2,ind:0xF6F5F2,lau:0xDCD8D0,h:0x9a968e,seam:0x8E7350,ws:0xC9C3B8,tb:0xF7F6F3,tl:0xE2DFD8,ch:0xBDB6AA,hd:0xF7F6F3,sb:0xF1F0EC,gap:0xB9B5AE,gry:0x6F7073};
 function woodTex(){const cv=document.createElement('canvas');cv.width=256;cv.height=512;const g=cv.getContext('2d');g.fillStyle='#CDAE84';g.fillRect(0,0,256,512);
 for(let i=0;i<140;i++){const x=Math.random()*256,w=0.6+Math.random()*1.8,a=0.05+Math.random()*0.12;g.strokeStyle=`rgba(${Math.random()<0.5?150:225},${Math.random()<0.5?115:195},${Math.random()<0.5?75:150},${a})`;g.lineWidth=w;g.beginPath();g.moveTo(x,0);for(let y=0;y<=512;y+=64)g.lineTo(x+Math.sin(y/90+i)*3,y);g.stroke()}
 const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;return t}
